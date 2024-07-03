@@ -14,7 +14,8 @@ export interface UserInfo {
  * 用户查询对象类型
  */
 export interface UserQuery extends PageQuery {
-  keywords?: string;
+  username?: string;
+  mobile?: string;
   status?: number;
   deptId?: number;
   startTime?: string;

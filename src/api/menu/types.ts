@@ -4,7 +4,7 @@ import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
  * 菜单查询参数类型
  */
 export interface MenuQuery {
-  keywords?: string;
+  name?: string;
 }
 
 /**

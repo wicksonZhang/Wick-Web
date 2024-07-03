@@ -41,13 +41,13 @@ export interface LoginLogPageVO {
   /**
    * 登录日期
    */
-  createTime: Date
+  createTime: Date;
 }
 
 /**
  * 操作日志分页对象
  */
-export interface OperateLogPageVO{
+export interface OperateLogPageVO {
   /**
    * 主键id
    */
@@ -69,17 +69,21 @@ export interface OperateLogPageVO{
    */
   userName: string;
   /**
+   * 用户昵称
+   */
+  userNickname: string;
+  /**
    * 操作模块
    */
   type: string;
   /**
    * 操作模块
    */
-  subType: string;
+  module: string;
   /**
    * 操作内容
    */
-  action: string;
+  name: string;
   /**
    * 详细内容
    */
@@ -105,7 +109,23 @@ export interface OperateLogPageVO{
    */
   createBy: string;
   /**
-   * 创建时间
+   * java方法执行参数
    */
-  createTime: Date;
+  javaMethod: string;
+  /**
+   * java方法执行参数
+   */
+  javaMethodArgs: string;
+  /**
+   * 开始时间
+   */
+  startTime: Date;
+  /**
+   * 执行时间
+   */
+  duration: number;
+  /**
+   * 执行结果
+   */
+  resultMsg: String;
 }

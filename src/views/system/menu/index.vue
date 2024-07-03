@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="关键字" prop="keywords">
+        <el-form-item label="菜单名称" prop="keywords">
           <el-input
             v-model="queryParams.name"
             placeholder="菜单名称"

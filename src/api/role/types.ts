@@ -2,7 +2,14 @@
  * 角色查询参数
  */
 export interface RoleQuery extends PageQuery {
-  keywords?: string;
+  /**
+   * 角色编码
+   */
+  code: string;
+  /**
+   * 角色名称
+   */
+  name: string;
 }
 
 /**

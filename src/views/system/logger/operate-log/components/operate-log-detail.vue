@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="dialogVisible" title="详情" width="800">
-    <el-descriptions :column="1" border>
+    <el-descriptions :column="1" border v-if="detailData">
       <el-descriptions-item label="日志主键" min-width="120">
         {{ detailData.id }}
       </el-descriptions-item>
@@ -50,26 +50,25 @@
   </el-dialog>
 </template>
 
-
 <script setup lang="ts">
-import {OperateLogPageVO} from "@/api/logger/type";
+import { OperateLogPageVO } from "@/api/logger/type";
 
-defineOptions({name: 'SystemOperateLogDetail'})
+defineOptions({ name: "SystemOperateLogDetail" });
 
-const dialogVisible = ref(false) // 弹窗的是否展示
-const detailLoading = ref(false) // 表单的加载中
-const detailData = ref<OperateLogPageVO[]>();// 详情数据
+const dialogVisible = ref(false); // 弹窗的是否展示
+const detailLoading = ref(false); // 表单的加载中
+const detailData = ref<OperateLogPageVO>(); // 详情数据
 
 /** 打开弹窗 */
-const open = async (data: OperateLogPageVO) => {
-  dialogVisible.value = true
+function open(data: OperateLogPageVO) {
+  dialogVisible.value = true;
   // 设置数据
-  detailLoading.value = true
+  detailLoading.value = true;
   try {
-    detailData.value = data
+    detailData.value = data;
   } finally {
-    detailLoading.value = false
+    detailLoading.value = false;
   }
 }
-defineExpose({open}) // 提供 open 方法，用于打开弹窗
+defineExpose({ open }); // 提供 open 方法，用于打开弹窗
 </script>

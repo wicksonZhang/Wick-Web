@@ -2,7 +2,7 @@
  * 部门查询参数
  */
 export interface DeptQuery {
-  keywords?: string;
+  name?: string;
   status?: number;
 }
 
