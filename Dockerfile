@@ -12,7 +12,7 @@ COPY package*.json ./
 
 # 运行 npm install 安装依赖
 RUN npm install pnpm -g
-RUN pnpm install
+RUN pnpm install --registry https://registry.npm.taobao.org
 
 # 将源代码复制到 /app 目录下
 COPY . .
