@@ -19,7 +19,7 @@ RUN pnpm install
 COPY . .
 
 # 打包构建
-RUN pnpm run build:prod
+RUN pnpm run build:dev
 
 # 将构建后的代码复制到 nginx 镜像中
 FROM nginx:1.24.0
