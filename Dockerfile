@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 运行 npm install 安装依赖
-RUN npm config set registry https://registry.npm.taobao.org
+RUN npm config set registry https://registry.npmmirror.com
 RUN npm install pnpm -g
 RUN pnpm install
 
