@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 运行 npm install 安装依赖
-RUN nnpm install pnpm -g
+RUN npm install pnpm -g
 RUN pnpm install
 
 # 将源代码复制到 /app 目录下
