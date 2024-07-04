@@ -1,3 +1,6 @@
+# 使用 Node.js 14 作为基础镜像
+FROM node:18.20.0
+
 # 维护者信息
 MAINTAINER Wickson <wickson_zhang@163.com>
 
