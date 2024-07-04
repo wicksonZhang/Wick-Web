@@ -1,6 +1,3 @@
-# 使用 Node.js 14 作为基础镜像
-FROM node:18.20.0
-
 # 维护者信息
 MAINTAINER Wickson <wickson_zhang@163.com>
 
@@ -23,7 +20,7 @@ RUN pnpm run build:dev
 
 # 将构建后的代码复制到 nginx 镜像中
 FROM nginx:1.24.0
-COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=0 /app/dist /docker/wick-web
 
 # 暴露 80 端口
 EXPOSE 80
