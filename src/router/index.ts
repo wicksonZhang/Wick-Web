@@ -1,3 +1,4 @@
+import type { App } from "vue";
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
 export const Layout = () => import("@/layout/index.vue");
@@ -31,14 +32,14 @@ export const constantRoutes: RouteRecordRaw[] = [
       {
         path: "dashboard",
         component: () => import("@/views/dashboard/index.vue"),
-        name: "Dashboard", // 用于 keep-alive, 必须与SFC自动推导或者显示声明的组件name一致
-        // https://cn.vuejs.org/guide/built-ins/keep-alive.html#include-exclude
+        // 用于 keep-alive 功能，需要与 SFC 中自动推导或显式声明的组件名称一致
+        // 参考文档: https://cn.vuejs.org/guide/built-ins/keep-alive.html#include-exclude
+        name: "Dashboard",
         meta: {
           title: "dashboard",
           icon: "homepage",
           affix: true,
           keepAlive: true,
-          alwaysShow: false,
         },
       },
       {
@@ -53,13 +54,12 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
     ],
   },
-
   // 外部链接
   // {
   //   path: "/external-link",
   //   component: Layout,
   //   children: [ {
-  //       component: () => import("@/views/external-link/index.vue"),
+  //       component: () => import("@/views/external-link/index1.vue"),
   //       path: "https://www.cnblogs.com/haoxianrui/",
   //       meta: { title: "外部链接", icon: "link" },
   //     },
@@ -75,14 +75,14 @@ export const constantRoutes: RouteRecordRaw[] = [
          children: [
              {
                  path: 'level1',
-                 component: () => import('@/views/nested/level1/index.vue'),
+                 component: () => import('@/views/nested/level1/index1.vue'),
                  name: 'Level1',
                  meta: {title: '菜单一级'},
                  redirect: '/nested/level1/level2',
                  children: [
                      {
                          path: 'level2',
-                         component: () => import('@/views/nested/level1/level2/index.vue'),
+                         component: () => import('@/views/nested/level1/level2/index1.vue'),
                          name: 'Level2',
                          meta: {title: '菜单二级'},
                          redirect: '/nested/level1/level2/level3',
@@ -116,6 +116,11 @@ const router = createRouter({
   // 刷新时，滚动条位置还原
   scrollBehavior: () => ({ left: 0, top: 0 }),
 });
+
+// 全局注册 router
+export function setupRouter(app: App<Element>) {
+  app.use(router);
+}
 
 /**
  * 重置路由

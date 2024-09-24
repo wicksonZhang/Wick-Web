@@ -2,7 +2,7 @@
   <div class="wh-full" :class="classObj">
     <!-- 遮罩层 -->
     <div
-      v-if="classObj.mobile && classObj.openSidebar"
+      v-if="isMobile && isOpenSidebar"
       class="wh-full fixed-lt z-999 bg-black bg-opacity-30"
       @click="handleOutsideClick"
     ></div>
@@ -11,7 +11,7 @@
     <Sidebar class="sidebar-container" />
 
     <!-- 混合布局 -->
-    <div v-if="layout === 'mix'" class="mix-container">
+    <div v-if="layout === LayoutEnum.MIX" class="mix-container">
       <div class="mix-container__left">
         <SidebarMenu :menu-list="mixLeftMenus" :base-path="activeTopMenuPath" />
         <div class="sidebar-toggle">
@@ -28,17 +28,25 @@
         </div>
         <AppMain />
         <Settings v-if="defaultSettings.showSettings" />
+        <!-- 返回顶部 -->
+        <el-backtop target=".main-container">
+          <svg-icon icon-class="backtop" size="24px" />
+        </el-backtop>
       </div>
     </div>
 
     <!-- 左侧和顶部布局 -->
     <div v-else :class="{ hasTagsView: showTagsView }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }">
-        <NavBar v-if="layout === 'left'" />
+        <NavBar v-if="layout === LayoutEnum.LEFT" />
         <TagsView v-if="showTagsView" />
       </div>
       <AppMain />
       <Settings v-if="defaultSettings.showSettings" />
+      <!-- 返回顶部 -->
+      <el-backtop target=".main-container">
+        <svg-icon icon-class="backtop" size="24px" />
+      </el-backtop>
     </div>
   </div>
 </template>
@@ -47,11 +55,16 @@
 import { useAppStore, useSettingsStore, usePermissionStore } from "@/store";
 import defaultSettings from "@/settings";
 import { DeviceEnum } from "@/enums/DeviceEnum";
+import { LayoutEnum } from "@/enums/LayoutEnum";
 
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
 const permissionStore = usePermissionStore();
+const width = useWindowSize().width;
 
+const WIDTH_DESKTOP = 992; // 响应式布局容器固定宽度  大屏（>=1200px） 中屏（>=992px） 小屏（>=768px）
+const isMobile = computed(() => appStore.device === DeviceEnum.MOBILE);
+const isOpenSidebar = computed(() => appStore.sidebar.opened);
 const fixedHeader = computed(() => settingsStore.fixedHeader); // 是否固定header
 const showTagsView = computed(() => settingsStore.tagsView); // 是否显示tagsView
 const layout = computed(() => settingsStore.layout); // 布局模式 left top mix
@@ -73,26 +86,17 @@ const classObj = computed(() => ({
   hideSidebar: !appStore.sidebar.opened,
   openSidebar: appStore.sidebar.opened,
   mobile: appStore.device === DeviceEnum.MOBILE,
-  "layout-left": layout.value === "left",
-  "layout-top": layout.value === "top",
-  "layout-mix": layout.value === "mix",
+  [`layout-${settingsStore.layout}`]: true,
 }));
 
-const width = useWindowSize().width;
-const WIDTH = 992; // 响应式布局容器固定宽度  大屏（>=1200px） 中屏（>=992px） 小屏（>=768px）
-
 watchEffect(() => {
-  if (width.value < WIDTH) {
-    appStore.toggleDevice(DeviceEnum.MOBILE);
-    appStore.closeSideBar();
+  appStore.toggleDevice(
+    width.value < WIDTH_DESKTOP ? DeviceEnum.MOBILE : DeviceEnum.DESKTOP
+  );
+  if (width.value >= WIDTH_DESKTOP) {
+    appStore.openSideBar();
   } else {
-    appStore.toggleDevice(DeviceEnum.DESKTOP);
-
-    if (width.value >= 1200) {
-      appStore.openSideBar();
-    } else {
-      appStore.closeSideBar();
-    }
+    appStore.closeSideBar();
   }
 });
 
@@ -103,18 +107,16 @@ function handleOutsideClick() {
 function toggleSidebar() {
   appStore.toggleSidebar();
 }
+
+const route = useRoute();
+watch(route, () => {
+  if (isMobile.value && isOpenSidebar.value) {
+    appStore.closeSideBar();
+  }
+});
 </script>
 
 <style lang="scss" scoped>
-.fixed-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 9;
-  width: calc(100% - $sidebar-width);
-  transition: width 0.28s;
-}
-
 .sidebar-container {
   position: fixed;
   top: 0;
@@ -122,8 +124,6 @@ function toggleSidebar() {
   left: 0;
   z-index: 999;
   width: $sidebar-width;
-  height: 100%;
-  overflow: hidden;
   background-color: $menu-background;
   transition: width 0.28s;
 
@@ -134,18 +134,22 @@ function toggleSidebar() {
 
 .main-container {
   position: relative;
-  min-height: 100%;
+  height: 100%;
   margin-left: $sidebar-width;
+  overflow-y: auto;
   transition: margin-left 0.28s;
+
+  .fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    transition: width 0.28s;
+  }
 }
 
 .layout-top {
-  .fixed-header {
-    top: $navbar-height;
-    width: 100%;
-  }
-
   .sidebar-container {
+    position: sticky;
     z-index: 999;
     display: flex;
     width: 100% !important;
@@ -169,8 +173,7 @@ function toggleSidebar() {
   }
 
   .main-container {
-    min-height: calc(100vh - $navbar-height);
-    padding-top: $navbar-height;
+    height: calc(100vh - $navbar-height);
     margin-left: 0;
   }
 }
@@ -237,41 +240,22 @@ function toggleSidebar() {
       flex: 1;
       min-width: 0;
       margin-left: 0;
-
-      .fixed-header {
-        top: $navbar-height;
-      }
     }
   }
 }
 
 .hideSidebar {
-  .fixed-header {
-    left: $sidebar-width-collapsed;
-    width: calc(100% - $sidebar-width-collapsed);
-  }
-
   .main-container {
     margin-left: $sidebar-width-collapsed;
   }
 
   &.layout-top {
-    .fixed-header {
-      left: 0;
-      width: 100%;
-    }
-
     .main-container {
       margin-left: 0;
     }
   }
 
   &.layout-mix {
-    .fixed-header {
-      left: $sidebar-width-collapsed;
-      width: calc(100% - $sidebar-width-collapsed);
-    }
-
     .sidebar-container {
       width: 100% !important;
     }
@@ -307,35 +291,11 @@ function toggleSidebar() {
 }
 
 .mobile {
-  .fixed-header {
-    left: 0;
-    width: 100%;
-  }
-
   .main-container {
     margin-left: 0;
   }
 
   &.layout-top {
-    .sidebar-container {
-      z-index: 999;
-      display: flex;
-      width: 100% !important;
-      height: $navbar-height;
-
-      :deep(.el-scrollbar) {
-        flex: 1;
-        min-width: 0;
-        height: $navbar-height;
-      }
-    }
-
-    .main-container {
-      padding-top: $navbar-height;
-      margin-left: 0;
-      overflow: hidden;
-    }
-
     // 顶部模式全局变量修改
     --el-menu-item-height: $navbar-height;
   }

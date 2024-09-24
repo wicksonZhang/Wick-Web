@@ -16,13 +16,14 @@
 </template>
 
 <script setup lang="ts">
-import { getDictOptions } from "@/api/dict";
+
+import DictAPI from "@/api/system/dict";
 
 const props = defineProps({
   /**
-   * 字典类型编码(eg: 性别-gender)
+   * 字典编码(eg: 性别-gender)
    */
-  typeCode: {
+  code: {
     type: String,
     required: true,
   },
@@ -39,14 +40,17 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["update:modelValue"]); // 父组件监听事件，同步子组件值的变化给父组件
+const emits = defineEmits(["update:modelValue"]);
 
-const options: Ref<OptionType[]> = ref([]); // 字典下拉数据源
+const options: Ref<OptionType[]> = ref([]);
 
 const selectedValue = ref<string | number | undefined>();
 
 watch([options, () => props.modelValue], ([newOptions, newModelValue]) => {
-  if (newOptions.length === 0) return; // 下拉数据源加载未完成不回显
+  if (newOptions.length === 0) {
+    // 下拉数据源加载未完成不回显
+    return;
+  }
   if (newModelValue == undefined) {
     selectedValue.value = undefined;
     return;
@@ -65,9 +69,9 @@ function handleChange(val?: string | number | undefined) {
 }
 
 onBeforeMount(() => {
-  // 根据字典类型编码(typeCode)获取字典选项
-  getDictOptions(props.typeCode).then((response) => {
-    options.value = response.data;
+  // 根据字典编码获取字典项
+  DictAPI.getOptions(props.code).then((data) => {
+    options.value = data;
   });
 });
 </script>

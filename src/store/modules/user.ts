@@ -1,10 +1,9 @@
-import { loginApi, logoutApi } from "@/api/auth";
-import { getUserInfoApi } from "@/api/user";
+import AuthAPI, { LoginData } from "@/api/auth/auth";
+import UserAPI, { UserInfo } from "@/api/system/user";
 import { resetRouter } from "@/router";
 import { store } from "@/store";
 
-import { LoginData } from "@/api/auth/types";
-import { UserInfo } from "@/api/user/types";
+import { TOKEN_KEY } from "@/enums/CacheEnum";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<UserInfo>({
@@ -20,10 +19,10 @@ export const useUserStore = defineStore("user", () => {
    */
   function login(loginData: LoginData) {
     return new Promise<void>((resolve, reject) => {
-      loginApi(loginData)
-        .then((response) => {
-          const { tokenType, accessToken } = response.data;
-          localStorage.setItem("accessToken", tokenType + " " + accessToken); // Bearer eyJhbGciOiJIUzI1NiJ9.xxx.xxx
+      AuthAPI.login(loginData)
+        .then((data) => {
+          const { tokenType, accessToken } = data;
+          localStorage.setItem(TOKEN_KEY, tokenType + " " + accessToken); // Bearer eyJhbGciOiJIUzI1NiJ9.xxx.xxx
           resolve();
         })
         .catch((error) => {
@@ -35,8 +34,8 @@ export const useUserStore = defineStore("user", () => {
   // 获取信息(用户昵称、头像、角色集合、权限集合)
   function getUserInfo() {
     return new Promise<UserInfo>((resolve, reject) => {
-      getUserInfoApi()
-        .then(({ data }) => {
+      UserAPI.getInfo()
+        .then((data) => {
           if (!data) {
             reject("Verification failed, please Login again.");
             return;
@@ -57,9 +56,9 @@ export const useUserStore = defineStore("user", () => {
   // user logout
   function logout() {
     return new Promise<void>((resolve, reject) => {
-      logoutApi()
+      AuthAPI.logout()
         .then(() => {
-          localStorage.setItem("accessToken", "");
+          localStorage.setItem(TOKEN_KEY, "");
           location.reload(); // 清空路由
           resolve();
         })
@@ -73,7 +72,7 @@ export const useUserStore = defineStore("user", () => {
   function resetToken() {
     console.log("resetToken");
     return new Promise<void>((resolve) => {
-      localStorage.setItem("accessToken", "");
+      localStorage.setItem(TOKEN_KEY, "");
       resetRouter();
       resolve();
     });
@@ -88,7 +87,11 @@ export const useUserStore = defineStore("user", () => {
   };
 });
 
-// 非setup
+/**
+ * 用于在组件外部（如在Pinia Store 中）使用 Pinia 提供的 store 实例。
+ * 官方文档解释了如何在组件外部使用 Pinia Store：
+ * https://pinia.vuejs.org/core-concepts/outside-component-usage.html#using-a-store-outside-of-a-component
+ */
 export function useUserStoreHook() {
   return useUserStore(store);
 }

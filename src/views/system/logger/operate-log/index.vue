@@ -17,7 +17,7 @@
             placeholder="请输入操作人员"
             class="!w-240px"
           >
-            <el-option label="系统管理员" value="2" />
+            <el-option label="系统管理员" value="2"/>
           </el-select>
         </el-form-item>
         <el-form-item label="操作模块" prop="subType">
@@ -37,13 +37,13 @@
             placeholder="请输入操作类型"
             class="!w-240px"
           >
-            <el-option label="其他" value="0" />
-            <el-option label="查询" value="1" />
-            <el-option label="新增" value="2" />
-            <el-option label="修改" value="3" />
-            <el-option label="删除" value="4" />
-            <el-option label="导入" value="5" />
-            <el-option label="导出" value="6" />
+            <el-option label="其他" value="0"/>
+            <el-option label="查询" value="1"/>
+            <el-option label="新增" value="2"/>
+            <el-option label="修改" value="3"/>
+            <el-option label="删除" value="4"/>
+            <el-option label="导入" value="5"/>
+            <el-option label="导出" value="6"/>
           </el-select>
         </el-form-item>
         <el-form-item label="操作时间" prop="createTime">
@@ -59,26 +59,34 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">
-            <i-ep-search /> 搜索</el-button
+            <i-ep-search/>
+            搜索
+          </el-button
           >
-          <el-button @click="resetQuery"><i-ep-refresh /> 重置</el-button>
-          <el-button
-            type="success"
-            plain
-            @click="handleExport"
-            :loading="exportLoading"
-          >
-            <i-ep-download /> 导出
+          <el-button @click="resetQuery">
+            <i-ep-refresh/>
+            重置
           </el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <!-- 数据表格 && 分页条 -->
-    <el-card shadow="never" class="table-container">
+    <el-card shadow="never" class="table-container" :show-overflow-tooltip="true">
+      <template #header>
+        <div class="flex-x-between">
+          <el-button @click="handleExport">
+            <i-ep-download/>
+            导出
+          </el-button>
+        </div>
+      </template>
       <el-table v-loading="loading" :data="pageData">
-        <el-table-column label="日志编号" align="center" prop="id" />
-        <el-table-column label="操作模块" align="center" prop="module" />
+        <el-table-column label="日志编号" align="center" prop="id"/>
+        <el-table-column label="操作人" align="center" prop="userName"/>
+        <el-table-column label="操作地址" align="center" prop="userIp"/>
+        <el-table-column label="操作地点" align="center" prop="operateLocation"/>
+        <el-table-column label="操作模块" align="center" prop="module"/>
         <el-table-column
           label="操作名"
           align="center"
@@ -96,10 +104,10 @@
             <el-tag v-if="scope.row.type === 6" type="info">导入</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作人" align="center" prop="userNickname" />
         <el-table-column label="操作结果" align="center" prop="status">
           <template #default="scope">
-            <span>{{ scope.row.resultCode === 0 ? "成功" : "失败" }}</span>
+            <el-tag v-if="scope.row.resultCode === 0" type="success">成功</el-tag>
+            <el-tag v-else type="danger">失败</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -137,40 +145,37 @@
     </el-card>
 
     <!-- 详细数据 -->
-    <operate-log-detail ref="detailRef" />
+    <operate-log-detail ref="detailRef"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { OperateLogPageVO } from "@/api/logger/type";
-import { exportOperateLog, getOperateLogPage } from "@/api/logger";
-import { getSimpleUserList } from "@/api/user";
 import OperateLogDetail from "@/views/system/logger/operate-log/components/operate-log-detail.vue";
+import LoggerAPI, {OperateLogPageVO, OperateLogQuery} from "@/api/system/logger";
+
+defineOptions({
+  name: "OperateLog",
+  inheritAttrs: false,
+});
 
 const loading = ref(false); // 列表的加载中
 const queryFormRef = ref(); // 搜索的表单
 const exportLoading = ref(false); // 导出的加载中
 const total = ref(0); // 数据总数
 const pageData = ref<OperateLogPageVO[]>();
-const userList = ref<[]>(); // 用户列表
 
-const queryParams = reactive({
+const queryParams = reactive<OperateLogQuery>({
   pageNumber: 1,
   pageSize: 10,
-  userId: "",
-  type: undefined,
-  module: undefined,
-  createTime: [] as any,
 });
 
 /** 搜索按钮操作 */
 function handleQuery() {
   loading.value = true;
-  getOperateLogPage(queryParams)
-    .then(({ data }) => {
-      pageData.value = data.list;
-      total.value = data.total;
-    })
+  LoggerAPI.getOperateLogPage(queryParams).then((data) => {
+    pageData.value = data.list;
+    total.value = data.total;
+  })
     .finally(() => {
       loading.value = false;
     });
@@ -184,13 +189,14 @@ function resetQuery() {
 
 /** 详情操作 */
 const detailRef = ref();
+
 function openDetail(row: OperateLogPageVO) {
   detailRef.value.open(row);
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  exportOperateLog(queryParams).then((response: any) => {
+  LoggerAPI.exportOperateLog(queryParams).then((response: any) => {
     const fileData = response.data;
     const fileName = decodeURI(
       response.headers["content-disposition"].split(";")[1].split("=")[1]
@@ -198,7 +204,7 @@ function handleExport() {
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8";
 
-    const blob = new Blob([fileData], { type: fileType });
+    const blob = new Blob([fileData], {type: fileType});
     const downloadUrl = window.URL.createObjectURL(blob);
 
     const downloadLink = document.createElement("a");
