@@ -5,7 +5,8 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  background: url("@/assets/images/login-background-light.jpg") no-repeat center right;
+  background: url("@/assets/images/login-background-light.jpg") no-repeat center
+    right;
 
   .login-content {
     display: flex;
@@ -30,7 +31,6 @@
       flex: 3;
       align-items: center;
       justify-content: center;
-      padding: 24px 12px 100px 12px;
       background: linear-gradient(60deg, #165dff, #6aa1ff);
 
       @media (width <= 768px) {
@@ -92,7 +92,8 @@
 
 html.dark {
   .login-container {
-    background: url("@/assets/images/login-background-dark.jpg") no-repeat center right;
+    background: url("@/assets/images/login-background-dark.jpg") no-repeat
+      center right;
 
     .login-content {
       background: transparent;
