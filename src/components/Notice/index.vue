@@ -63,10 +63,10 @@
 </template>
 <script setup lang="ts">
 import { MessageTypeEnum, MessageTypeLabels } from "@/enums/MessageTypeEnum";
-import NoticeAPI from "@/api/notice";
-import socket from "@/api/socket";
 import NoticeModal from "@/components/NoticeModal/index.vue";
 import router from "@/router";
+import NoticeAPI from "@/api/notice/notice";
+import socket from "@/api/notice/socket";
 
 const activeTab = ref(MessageTypeEnum.MESSAGE);
 const messages = ref<any>([]);
