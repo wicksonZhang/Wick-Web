@@ -3,7 +3,6 @@ import request from "@/utils/request";
 const GENERATOR_BASE_URL = "/api/v1/code-gen";
 
 class GeneratorAPI {
-
   /** 获取数据表分页列表 */
   static getCodeGenTableList(params: CodeGenTablePageQuery) {
     return request<any, PageResult<CodeGenTableVO[]>>({
@@ -45,8 +44,8 @@ class GeneratorAPI {
   static getToolCodeGenTable(tableId: number) {
     return request<any, CodeGenTableDetailsVO>({
       url: `${GENERATOR_BASE_URL}/details/${tableId}`,
-      method: "get"
-    })
+      method: "get",
+    });
   }
 
   /**
@@ -56,11 +55,23 @@ class GeneratorAPI {
   static updateToolCodeGenTable(data: any) {
     return request({
       url: `${GENERATOR_BASE_URL}/update`,
-      method: 'put',
-      data: data
-    })
+      method: "put",
+      data: data,
+    });
   }
 
+  /**
+   * 删除表信息
+   *
+   * @param ids 表ID，多个以英文逗号(,)分隔
+   * @returns 请求结果
+   */
+  static deleteByIds(ids: string) {
+    return request({
+      url: `${GENERATOR_BASE_URL}/delete/${ids}`,
+      method: "delete",
+    });
+  }
 }
 
 export default GeneratorAPI;
@@ -115,7 +126,6 @@ export interface CodeGenTablePreviewVO {
 
 /** 代码详细数据 */
 export interface CodeGenTableDetailsVO {
-
   /**
    * 数据表基本信息
    */
@@ -129,7 +139,6 @@ export interface CodeGenTableDetailsVO {
 
 /** 数据表基本信息 */
 export interface CodeGenTableInfoVO {
-
   // ========================== 基本信息 ==========================
 
   /** 主键id,示例值：1 */
@@ -151,7 +160,7 @@ export interface CodeGenTableInfoVO {
   remark: string;
 
   // ========================== 生成信息 ==========================
-  
+
   /** 使用的模板（crud单表操作 tree树表操作 sub主子表操作）,示例值："crud" */
   tplCategory: string;
 
@@ -182,7 +191,6 @@ export interface CodeGenTableInfoVO {
 
 /** 字段配置 */
 export interface CodeGenColumnsInfoVO {
-
   /** 编号, 示例值：1024 */
   id?: number;
 
