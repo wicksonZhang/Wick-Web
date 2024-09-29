@@ -72,6 +72,17 @@ class GeneratorAPI {
       method: "delete",
     });
   }
+
+  /**
+   * 同步数据表
+   * @param tableId 数据表id
+   */
+  static syncCodegenFromDB(tableId: number) {
+    return request({
+      url: `${GENERATOR_BASE_URL}/syncDb/${tableId}`,
+      method: "put",
+    });
+  }
 }
 
 export default GeneratorAPI;

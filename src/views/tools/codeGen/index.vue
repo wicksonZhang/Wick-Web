@@ -225,7 +225,23 @@ function handleGenTable(row: CodeGenTableVO) {
 
 /** 同步数据库操作 */
 function handleSyncDb(row: CodeGenTableVO) {
-  console.log(row); // 打印行数据，实际开发中应调用同步数据库API
+  ElMessageBox.confirm("确认要强制同步" + row.tableName + "表结构吗?", "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(
+    () => {
+      loading.value = true;
+      GeneratorAPI.syncCodegenFromDB(row.id)
+        .then(() => {
+          ElMessage.success("代码同步成功");
+        })
+        .finally(() => (loading.value = false));
+    },
+    () => {
+      ElMessage.info("已取消代码同步");
+    }
+  );
 }
 
 /** 打开导入表弹窗 */
