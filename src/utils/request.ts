@@ -40,34 +40,41 @@ service.interceptors.response.use(
       return response;
     }
 
+    // 获取 状态码、数据、消息
     const { code, data, msg } = response.data;
     if (code === ResultEnum.SUCCESS) {
       return data;
     }
 
-    ElMessage.error(msg || "系统出错");
+    // 如果 code === 401 说明token已过期
+    if (code === ResultEnum.TOKEN_INVALID) {
+      ElNotification({
+        title: "提示",
+        message: "您的会话已过期，请重新登录",
+        type: "info",
+      });
+      useUserStoreHook()
+        .resetToken()
+        .then(() => {
+          location.reload();
+        });
+    } else {
+      ElMessage.error(msg || "系统出错");
+    }
     return Promise.reject(new Error(msg || "Error"));
   },
   (error: any) => {
-    // 异常处理
-    if (error.response.data) {
-      const { code, msg } = error.response.data;
-      if (code === ResultEnum.TOKEN_INVALID) {
-        ElNotification({
-          title: "提示",
-          message: "您的会话已过期，请重新登录",
-          type: "info",
-        });
-        useUserStoreHook()
-          .resetToken()
-          .then(() => {
-            location.reload();
-          });
-      } else {
-        ElMessage.error(msg || "系统出错");
-      }
+    console.log("err" + error);
+    let { message } = error;
+    if (message == "Network Error") {
+      message = "后端接口连接异常";
+    } else if (message.includes("timeout")) {
+      message = "系统接口请求超时";
+    } else if (message.includes("Request failed with status code")) {
+      message = "系统接口" + message.substr(message.length - 3) + "异常";
     }
-    return Promise.reject(error.message);
+    ElMessage({ message: message, type: "error", duration: 5 * 1000 });
+    return Promise.reject(error);
   }
 );
 

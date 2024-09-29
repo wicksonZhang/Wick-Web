@@ -37,8 +37,10 @@
         </el-form-item>
         <!-- 搜索与重置按钮 -->
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          <el-button type="primary" icon="Search" @click="handleQuery">
+            搜索
+          </el-button>
+          <el-button icon="Refresh" @click="handleResetQuery">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -52,7 +54,8 @@
           type="success"
           icon="Upload"
           @click="openImportTable()"
-        >导入
+        >
+          导入
         </el-button>
         <!-- 删除按钮，支持多选 -->
         <el-button
@@ -61,7 +64,8 @@
           icon="Delete"
           :disabled="removeIds.length === 0"
           @click="handleDelete()"
-        >删除
+        >
+          删除
         </el-button>
       </template>
 
@@ -75,35 +79,29 @@
         @selection-change="handleSelectionChange"
       >
         <!-- 多选框列 -->
-        <el-table-column type="selection" align="center" width="55"></el-table-column>
+        <el-table-column type="selection" align="center" width="55" />
         <!-- 序号列，动态计算当前页数序号 -->
         <el-table-column label="序号" type="index" width="80" align="center">
           <template #default="scope">
-            <span>{{ (queryParams.pageNumber - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
+            <span>
+              {{
+                (queryParams.pageNumber - 1) * queryParams.pageSize +
+                scope.$index +
+                1
+              }}
+            </span>
           </template>
         </el-table-column>
         <!-- 表名称列，显示表的名称信息 -->
-        <el-table-column
-          label="表名称"
-          align="center"
-          prop="tableName"
-        />
+        <el-table-column label="表名称" align="center" prop="tableName" />
         <!-- 表描述列 -->
-        <el-table-column
-          label="表描述"
-          align="center"
-          prop="tableComment"
-        />
+        <el-table-column label="表描述" align="center" prop="tableComment" />
         <!-- 类名列 -->
-        <el-table-column
-          label="类名"
-          align="center"
-          prop="className"
-        />
+        <el-table-column label="类名" align="center" prop="className" />
         <!-- 创建时间列 -->
-        <el-table-column label="创建时间" align="center" prop="createTime"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" />
         <!-- 更新时间列 -->
-        <el-table-column label="更新时间" align="center" prop="updateTime"/>
+        <el-table-column label="更新时间" align="center" prop="updateTime" />
         <!-- 操作列，包含预览、编辑、删除、同步、生成代码操作 -->
         <el-table-column label="操作" align="center" width="350">
           <template #default="scope">
@@ -112,7 +110,8 @@
               type="success"
               size="small"
               icon="View"
-              @click="handlePreview(scope.row)">
+              @click="handlePreview(scope.row)"
+            >
               预览
             </el-button>
             <el-button
@@ -121,7 +120,8 @@
               type="primary"
               size="small"
               icon="Edit"
-              @click="handleEditTable(scope.row)">
+              @click="handleEditTable(scope.row)"
+            >
               编辑
             </el-button>
             <el-button
@@ -130,7 +130,8 @@
               type="danger"
               size="small"
               icon="Delete"
-              @click="handleDelete(scope.row.id)">
+              @click="handleDelete(scope.row.id)"
+            >
               删除
             </el-button>
             <el-button
@@ -139,7 +140,8 @@
               type="warning"
               size="small"
               icon="Refresh"
-              @click="handleSyncDb(scope.row)">
+              @click="handleSyncDb(scope.row)"
+            >
               同步
             </el-button>
             <el-button
@@ -148,7 +150,8 @@
               type="primary"
               size="small"
               icon="Download"
-              @click="handleGenTable(scope.row)">
+              @click="handleGenTable(scope.row)"
+            >
               生成代码
             </el-button>
           </template>
@@ -165,16 +168,22 @@
     </el-card>
 
     <!-- 弹窗组件 -->
-    <ImportTable ref="importRef" @success="handleQuery"/> <!-- 导入表弹窗 -->
-    <PreviewCode ref="previewRef"/> <!-- 预览代码弹窗 -->
-    <EditTable ref="handleEditRef"/> <!-- 编辑代码弹窗 -->
+    <ImportTable ref="importRef" @success="handleQuery" />
+    <!-- 导入表弹窗 -->
+    <PreviewCode ref="previewRef" />
+    <!-- 预览代码弹窗 -->
+    <EditTable ref="handleEditRef" />
+    <!-- 编辑代码弹窗 -->
   </div>
 </template>
 
 <script lang="ts" setup>
 import ImportTable from "@/views/tools/codeGen/ImportTable.vue";
 import PreviewCode from "@/views/tools/codeGen/PreviewCode.vue";
-import GeneratorAPI, {CodeGenTablePageQuery, CodeGenTableVO} from "@/api/tools/generator";
+import GeneratorAPI, {
+  CodeGenTablePageQuery,
+  CodeGenTableVO,
+} from "@/api/tools/generator";
 import EditTable from "@/views/tools/codeGen/EditTable.vue";
 
 const queryRef = ref(ElForm); // 表单引用，用于重置表单
@@ -184,9 +193,10 @@ const removeIds = ref([]);
 const total = ref(0); // 表格数据总数
 const tableNames = ref([]); // 选中表格的名称
 const createTime = ref([]); // 创建时间范围
-const queryParams = reactive<CodeGenTablePageQuery>({ // 查询参数，包括分页信息
+const queryParams = reactive<CodeGenTablePageQuery>({
+  // 查询参数，包括分页信息
   pageNumber: 1,
-  pageSize: 10
+  pageSize: 10,
 });
 
 /** 获取表格数据 */
@@ -210,23 +220,42 @@ async function handleQuery() {
 
 /** 生成代码功能 */
 function handleGenTable(row: CodeGenTableVO) {
-  console.log(row); // 打印行数据，实际开发中应调用生成代码API
+  if (!row.tableName) {
+    ElMessage.error("表名不能为空");
+    return;
+  }
+  GeneratorAPI.download(row.id);
 }
 
 /** 同步数据库操作 */
 function handleSyncDb(row: CodeGenTableVO) {
-  console.log(row); // 打印行数据，实际开发中应调用同步数据库API
+  ElMessageBox.confirm("确认要强制同步" + row.tableName + "表结构吗?", "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(
+    () => {
+      loading.value = true;
+      GeneratorAPI.syncCodegenFromDB(row.id)
+        .then(() => {
+          ElMessage.success("代码同步成功");
+        })
+        .finally(() => (loading.value = false));
+    },
+    () => {
+      ElMessage.info("已取消代码同步");
+    }
+  );
 }
 
 /** 打开导入表弹窗 */
 const importRef = ref();
-
 function openImportTable() {
   importRef.value.open();
 }
 
 /** 重置搜索条件，并重新获取数据 */
-function resetQuery() {
+function handleResetQuery() {
   queryRef.value.resetFields(); // 重置表单
   createTime.value = []; // 清空时间范围
   getList();
@@ -243,7 +272,7 @@ function handlePreview(row: CodeGenTableVO) {
 const handleSelectionChange = (selection: any) => {
   removeIds.value = selection.map((item: any) => item.id);
   tableNames.value = selection.map((item: any) => item.tableName);
-}
+};
 
 /** 编辑表功能 */
 const handleEditRef = ref();
@@ -258,6 +287,24 @@ function handleDelete(id?: number) {
     ElMessage.warning("请勾选删除项");
     return;
   }
+  ElMessageBox.confirm("确认删除已选中的数据项?", "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(
+    () => {
+      loading.value = true;
+      GeneratorAPI.deleteByIds(tableIds)
+        .then(() => {
+          ElMessage.success("删除成功");
+          handleResetQuery();
+        })
+        .finally(() => (loading.value = false));
+    },
+    () => {
+      ElMessage.info("已取消删除");
+    }
+  );
 }
 
 /** 组件挂载时，自动加载数据 */
