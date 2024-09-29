@@ -220,7 +220,11 @@ async function handleQuery() {
 
 /** 生成代码功能 */
 function handleGenTable(row: CodeGenTableVO) {
-  console.log(row); // 打印行数据，实际开发中应调用生成代码API
+  if (!row.tableName) {
+    ElMessage.error("表名不能为空");
+    return;
+  }
+  GeneratorAPI.download(row.id);
 }
 
 /** 同步数据库操作 */
