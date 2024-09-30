@@ -20,7 +20,7 @@ class UserAPI {
    *
    * @param queryParams 查询参数
    */
-  static getPage(queryParams: UserPageQuery) {
+  static getPage(queryParams: PageQuery) {
     return request<any, PageResult<UserPageVO[]>>({
       url: `${USER_BASE_URL}/page`,
       method: "get",
@@ -107,7 +107,7 @@ class UserAPI {
    *
    * @param queryParams 查询参数
    */
-  static export(queryParams: UserPageQuery) {
+  static export(queryParams: PageQuery) {
     return request({
       url: `${USER_BASE_URL}/export`,
       method: "get",
@@ -128,7 +128,7 @@ class UserAPI {
     return request({
       url: `${USER_BASE_URL}/import`,
       method: "post",
-      params: {deptId: deptId},
+      params: { deptId: deptId },
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -158,23 +158,6 @@ export interface UserInfo {
 
   /** 权限 */
   perms: string[];
-}
-
-/**
- * 用户分页查询对象
- */
-export interface UserPageQuery extends PageQuery {
-  /** 搜索关键字 */
-  keywords?: string;
-
-  /** 用户状态 */
-  status?: number;
-
-  /** 部门ID */
-  deptId?: number;
-
-  /** 开始时间 */
-  createTimeRange?: [string, string];
 }
 
 /** 用户分页对象 */
