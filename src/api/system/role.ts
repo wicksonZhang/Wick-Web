@@ -4,9 +4,8 @@ import request from "@/utils/request";
 const ROLE_BASE_URL = "/api/v1/role";
 
 class RoleAPI {
-
   /** 获取角色分页数据 */
-  static getPage(queryParams?: RolePageQuery) {
+  static getPage(queryParams?: PageQuery) {
     return request<any, PageResult<RolePageVO[]>>({
       url: `${ROLE_BASE_URL}/page`,
       method: "get",
@@ -96,16 +95,9 @@ class RoleAPI {
       method: "delete",
     });
   }
-
 }
 
 export default RoleAPI;
-
-/** 角色分页查询参数 */
-export interface RolePageQuery extends PageQuery {
-  /** 搜索关键字 */
-  keywords?: string;
-}
 
 /** 角色分页对象 */
 export interface RolePageVO {

@@ -2,10 +2,18 @@
   <div class="app-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item prop="keywords" label="关键字">
+        <el-form-item prop="keywords" label="角色名称">
           <el-input
-            v-model="queryParams.keywords"
+            v-model="queryParams.name"
             placeholder="角色名称"
+            clearable
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item prop="keywords" label="角色编码">
+          <el-input
+            v-model="queryParams.code"
+            placeholder="角色编码"
             clearable
             @keyup.enter="handleQuery"
           />
@@ -13,11 +21,11 @@
 
         <el-form-item>
           <el-button type="primary" @click="handleQuery">
-            <i-ep-search/>
+            <i-ep-search />
             搜索
           </el-button>
           <el-button @click="handleResetQuery">
-            <i-ep-refresh/>
+            <i-ep-refresh />
             重置
           </el-button>
         </el-form-item>
@@ -29,8 +37,9 @@
         <el-button
           v-hasPerm="['system:role:add']"
           type="success"
-          @click="handleOpenDialog()">
-          <i-ep-plus/>
+          @click="handleOpenDialog()"
+        >
+          <i-ep-plus />
           新增
         </el-button>
         <el-button
@@ -39,7 +48,7 @@
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
-          <i-ep-delete/>
+          <i-ep-delete />
           删除
         </el-button>
       </template>
@@ -50,9 +59,9 @@
         :data="roleList"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center"/>
-        <el-table-column label="角色名称" prop="name" align="center"/>
-        <el-table-column label="角色编码" prop="code" align="center"/>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="角色名称" prop="name" align="center" />
+        <el-table-column label="角色编码" prop="code" align="center" />
 
         <el-table-column label="状态" align="center">
           <template #default="scope">
@@ -61,7 +70,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="排序" align="center" prop="sort"/>
+        <el-table-column label="排序" align="center" prop="sort" />
         <el-table-column fixed="right" label="操作" width="220">
           <template #default="scope">
             <el-button
@@ -71,7 +80,7 @@
               link
               @click="handleOpenAssignPermDialog(scope.row)"
             >
-              <i-ep-position/>
+              <i-ep-position />
               分配权限
             </el-button>
             <el-button
@@ -81,7 +90,7 @@
               link
               @click="handleOpenDialog(scope.row.id)"
             >
-              <i-ep-edit/>
+              <i-ep-edit />
               编辑
             </el-button>
             <el-button
@@ -91,7 +100,7 @@
               link
               @click="handleDelete(scope.row.id)"
             >
-              <i-ep-delete/>
+              <i-ep-delete />
               删除
             </el-button>
           </template>
@@ -121,20 +130,20 @@
         label-width="100px"
       >
         <el-form-item label="角色名称" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入角色名称"/>
+          <el-input v-model="formData.name" placeholder="请输入角色名称" />
         </el-form-item>
 
         <el-form-item label="角色编码" prop="code">
-          <el-input v-model="formData.code" placeholder="请输入角色编码"/>
+          <el-input v-model="formData.code" placeholder="请输入角色编码" />
         </el-form-item>
 
         <el-form-item label="数据权限" prop="dataScope">
           <el-select v-model="formData.dataScope">
-            <el-option :key="1" label="全部数据" :value="1"/>
-            <el-option :key="2" label="自定数据权限" :value="2"/>
-            <el-option :key="3" label="部门数据权限" :value="3"/>
-            <el-option :key="4" label="部门及以下数据权限" :value="4"/>
-            <el-option :key="5" label="仅本人数据权限" :value="5"/>
+            <el-option :key="1" label="全部数据" :value="1" />
+            <el-option :key="2" label="自定数据权限" :value="2" />
+            <el-option :key="3" label="部门数据权限" :value="3" />
+            <el-option :key="4" label="部门及以下数据权限" :value="4" />
+            <el-option :key="5" label="仅本人数据权限" :value="5" />
           </el-select>
         </el-form-item>
 
@@ -177,7 +186,7 @@
           placeholder="菜单权限名称"
         >
           <template #prefix>
-            <i-ep-search/>
+            <i-ep-search />
           </template>
         </el-input>
       </div>
@@ -204,25 +213,21 @@
           <el-button type="primary" @click="handleAssignPermSubmit">
             确 定
           </el-button>
-          <el-button @click="assignPermDialogVisible = false">
-            取 消
-          </el-button>
+          <el-button @click="assignPermDialogVisible = false">取 消</el-button>
         </div>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import RoleAPI, {RoleForm, RolePageQuery, RolePageVO} from "@/api/system/role";
+import RoleAPI, { RoleForm, RolePageVO } from "@/api/system/role";
 import MenuAPI from "@/api/system/menu";
 
 defineOptions({
   name: "Role",
   inheritAttrs: false,
 });
-
 
 const queryFormRef = ref(ElForm);
 const roleFormRef = ref(ElForm);
@@ -232,7 +237,7 @@ const loading = ref(false);
 const ids = ref<number[]>([]);
 const total = ref(0);
 
-const queryParams = reactive<RolePageQuery>({
+const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
 });
@@ -256,10 +261,10 @@ const formData = reactive<RoleForm>({
 });
 
 const rules = reactive({
-  name: [{required: true, message: "请输入角色名称", trigger: "blur"}],
-  code: [{required: true, message: "请输入角色编码", trigger: "blur"}],
-  dataScope: [{required: true, message: "请选择数据权限", trigger: "blur"}],
-  status: [{required: true, message: "请选择状态", trigger: "blur"}],
+  name: [{ required: true, message: "请输入角色名称", trigger: "blur" }],
+  code: [{ required: true, message: "请输入角色编码", trigger: "blur" }],
+  dataScope: [{ required: true, message: "请选择数据权限", trigger: "blur" }],
+  status: [{ required: true, message: "请选择状态", trigger: "blur" }],
 });
 
 // 选中的角色
