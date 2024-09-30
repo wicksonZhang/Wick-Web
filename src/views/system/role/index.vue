@@ -240,6 +240,8 @@ const total = ref(0);
 const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
+  name: undefined,
+  code: undefined,
 });
 
 // 角色表格数据
