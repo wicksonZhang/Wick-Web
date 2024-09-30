@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="关键字" prop="keywords">
+        <el-form-item label="菜单名称" prop="name">
           <el-input
             v-model="queryParams.name"
             placeholder="菜单名称"
@@ -192,7 +192,10 @@
         </el-form-item>
 
         <el-form-item label="菜单类型" prop="type">
-          <el-radio-group v-model="formData.type" @change="handleMenuTypeChange">
+          <el-radio-group
+            v-model="formData.type"
+            @change="handleMenuTypeChange"
+          >
             <el-radio value="CATALOG">目录</el-radio>
             <el-radio value="MENU">菜单</el-radio>
             <el-radio value="BUTTON">按钮</el-radio>
@@ -289,67 +292,67 @@
           </el-input>
         </el-form-item>
 
-<!--        <el-form-item v-if="formData.type === MenuTypeEnum.MENU">-->
-<!--          <template #label>-->
-<!--            <div>-->
-<!--              路由参数-->
-<!--              <el-tooltip placement="bottom" effect="light">-->
-<!--                <template #content>-->
-<!--                  组件页面使用 `useRoute().query.参数名` 获取路由参数值。-->
-<!--                </template>-->
-<!--                <i-ep-QuestionFilled class="inline-block" />-->
-<!--              </el-tooltip>-->
-<!--            </div>-->
-<!--          </template>-->
+        <!--        <el-form-item v-if="formData.type === MenuTypeEnum.MENU">-->
+        <!--          <template #label>-->
+        <!--            <div>-->
+        <!--              路由参数-->
+        <!--              <el-tooltip placement="bottom" effect="light">-->
+        <!--                <template #content>-->
+        <!--                  组件页面使用 `useRoute().query.参数名` 获取路由参数值。-->
+        <!--                </template>-->
+        <!--                <i-ep-QuestionFilled class="inline-block" />-->
+        <!--              </el-tooltip>-->
+        <!--            </div>-->
+        <!--          </template>-->
 
-<!--          <div v-if="!formData.params || formData.params.length === 0">-->
-<!--            <el-button-->
-<!--              type="success"-->
-<!--              plain-->
-<!--              @click="formData.params = [{ key: '', value: '' }]"-->
-<!--            >-->
-<!--              添加路由参数-->
-<!--            </el-button>-->
-<!--          </div>-->
+        <!--          <div v-if="!formData.params || formData.params.length === 0">-->
+        <!--            <el-button-->
+        <!--              type="success"-->
+        <!--              plain-->
+        <!--              @click="formData.params = [{ key: '', value: '' }]"-->
+        <!--            >-->
+        <!--              添加路由参数-->
+        <!--            </el-button>-->
+        <!--          </div>-->
 
-<!--          <div v-else>-->
-<!--            <div v-for="(item, index) in formData.params" :key="index">-->
-<!--              <el-input-->
-<!--                v-model="item.key"-->
-<!--                placeholder="参数名"-->
-<!--                class="w-[100px]"-->
-<!--              />-->
+        <!--          <div v-else>-->
+        <!--            <div v-for="(item, index) in formData.params" :key="index">-->
+        <!--              <el-input-->
+        <!--                v-model="item.key"-->
+        <!--                placeholder="参数名"-->
+        <!--                class="w-[100px]"-->
+        <!--              />-->
 
-<!--              <span class="mx-1">=</span>-->
+        <!--              <span class="mx-1">=</span>-->
 
-<!--              <el-input-->
-<!--                v-model="item.value"-->
-<!--                placeholder="参数值"-->
-<!--                class="w-[100px]"-->
-<!--              />-->
+        <!--              <el-input-->
+        <!--                v-model="item.value"-->
+        <!--                placeholder="参数值"-->
+        <!--                class="w-[100px]"-->
+        <!--              />-->
 
-<!--              <el-icon-->
-<!--                class="ml-2 cursor-pointer color-[var(&#45;&#45;el-color-success)]"-->
-<!--                style="vertical-align: -0.15em"-->
-<!--                v-if="-->
-<!--                  formData.params.indexOf(item) === formData.params.length - 1-->
-<!--                "-->
-<!--                @click="formData.params.push({ key: '', value: '' })"-->
-<!--              >-->
-<!--                <CirclePlusFilled />-->
-<!--              </el-icon>-->
-<!--              <el-icon-->
-<!--                class="ml-2 cursor-pointer color-[var(&#45;&#45;el-color-danger)]"-->
-<!--                style="vertical-align: -0.15em"-->
-<!--                @click="-->
-<!--                  formData.params.splice(formData.params.indexOf(item), 1)-->
-<!--                "-->
-<!--              >-->
-<!--                <DeleteFilled />-->
-<!--              </el-icon>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </el-form-item>-->
+        <!--              <el-icon-->
+        <!--                class="ml-2 cursor-pointer color-[var(&#45;&#45;el-color-success)]"-->
+        <!--                style="vertical-align: -0.15em"-->
+        <!--                v-if="-->
+        <!--                  formData.params.indexOf(item) === formData.params.length - 1-->
+        <!--                "-->
+        <!--                @click="formData.params.push({ key: '', value: '' })"-->
+        <!--              >-->
+        <!--                <CirclePlusFilled />-->
+        <!--              </el-icon>-->
+        <!--              <el-icon-->
+        <!--                class="ml-2 cursor-pointer color-[var(&#45;&#45;el-color-danger)]"-->
+        <!--                style="vertical-align: -0.15em"-->
+        <!--                @click="-->
+        <!--                  formData.params.splice(formData.params.indexOf(item), 1)-->
+        <!--                "-->
+        <!--              >-->
+        <!--                <DeleteFilled />-->
+        <!--              </el-icon>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        </el-form-item>-->
 
         <el-form-item
           v-if="formData.type !== MenuTypeEnum.BUTTON"
@@ -446,7 +449,7 @@
 </template>
 
 <script setup lang="ts">
-import MenuAPI, {MenuForm, MenuQuery, MenuVO} from "@/api/system/menu";
+import MenuAPI, { MenuForm, MenuVO } from "@/api/system/menu";
 
 defineOptions({
   name: "Menu",
@@ -465,7 +468,11 @@ const dialog = reactive({
 });
 
 // 查询参数
-const queryParams = reactive<MenuQuery>({});
+const queryParams = reactive({
+  pageNumber: 1,
+  pageSize: 10,
+  name: undefined,
+});
 // 菜单表格数据
 const menuTableData = ref<MenuVO[]>([]);
 // 顶级菜单下拉选项

@@ -402,7 +402,7 @@ function handleResetQuery() {
   queryFormRef.value.resetFields();
   queryParams.pageNumber = 1;
   queryParams.deptId = undefined;
-  queryParams.createTimeRange = undefined;
+  queryParams.createTime = [];
   handleQuery();
 }
 

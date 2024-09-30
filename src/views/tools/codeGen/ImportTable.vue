@@ -33,7 +33,9 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="Search" @click="handleQuery">
+          搜索
+        </el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -47,19 +49,19 @@
         :data="tableList"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" />
         <el-table-column
           prop="tableName"
           label="表名称"
           :show-overflow-tooltip="true"
-        ></el-table-column>
+        />
         <el-table-column
           prop="tableComment"
           label="表描述"
           :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-        <el-table-column prop="updateTime" label="更新时间"></el-table-column>
+        />
+        <el-table-column prop="createTime" label="创建时间" />
+        <el-table-column prop="updateTime" label="更新时间" />
       </el-table>
       <pagination
         v-show="total > 0"
@@ -81,8 +83,8 @@
 </template>
 
 <script lang="ts" setup>
-import {ElTable} from "element-plus";
-import GeneratorAPI, {CodeGenTablePageQuery, CodeGenTableVO} from "@/api/tools/generator";
+import { ElTable } from "element-plus";
+import GeneratorAPI, { CodeGenTableVO } from "@/api/tools/generator";
 
 // 弹窗是否可见
 const visible = ref(false);
@@ -95,9 +97,11 @@ const tableList = ref<CodeGenTableVO[]>([]); // 表格数据
 const total = ref(0); // 总条目数
 
 // 查询参数
-const queryParams = reactive<CodeGenTablePageQuery>({
+const queryParams = reactive({
   pageNumber: 1,
-  pageSize: 10
+  pageSize: 10,
+  tableName: undefined,
+  tableComment: undefined,
 });
 
 /** 打开弹窗并加载数据 */
@@ -106,7 +110,7 @@ function open() {
   getList();
 }
 
-defineExpose({open}); // 暴露 `open` 方法，供外部调用
+defineExpose({ open }); // 暴露 `open` 方法，供外部调用
 
 /** 单击选择行，支持多选 */
 function clickRow(row: any) {
@@ -143,7 +147,7 @@ const tables = ref<string[]>([]);
 
 /** 处理多选框选中数据 */
 function handleSelectionChange(selection: any[]) {
-  tables.value = selection.map(item => item.tableName);
+  tables.value = selection.map((item) => item.tableName);
 }
 
 /** 导入选中的表 */

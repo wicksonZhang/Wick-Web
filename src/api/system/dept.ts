@@ -9,7 +9,7 @@ class DeptAPI {
    * @param queryParams 查询参数（可选）
    * @returns 部门树形表格数据
    */
-  static getList(queryParams?: DeptQuery) {
+  static getList(queryParams?: PageQuery) {
     return request<any, DeptVO[]>({
       url: `${DEPT_BASE_URL}/list`,
       method: "get",
@@ -81,14 +81,6 @@ class DeptAPI {
 }
 
 export default DeptAPI;
-
-/** 部门查询参数 */
-export interface DeptQuery {
-  /** 搜索关键字 */
-  keywords?: string;
-  /** 状态 */
-  status?: number;
-}
 
 /** 部门类型 */
 export interface DeptVO {

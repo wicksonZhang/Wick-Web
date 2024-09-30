@@ -4,7 +4,7 @@ const GENERATOR_BASE_URL = "/api/v1/code-gen";
 
 class GeneratorAPI {
   /** 获取数据表分页列表 */
-  static getCodeGenTableList(params: CodeGenTablePageQuery) {
+  static getCodeGenTableList(params: PageQuery) {
     return request<any, PageResult<CodeGenTableVO[]>>({
       url: `${GENERATOR_BASE_URL}/list`,
       method: "get",
@@ -21,7 +21,7 @@ class GeneratorAPI {
   }
 
   /** 获取数据源表数据 */
-  static getDataSourceTableList(params: CodeGenTablePageQuery) {
+  static getDataSourceTableList(params: PageQuery) {
     return request<any, PageResult<CodeGenTableVO[]>>({
       url: `${GENERATOR_BASE_URL}/db/list`,
       method: "get",
@@ -110,18 +110,6 @@ class GeneratorAPI {
 }
 
 export default GeneratorAPI;
-
-/**  数据表分页查询参数 */
-export interface CodeGenTablePageQuery extends PageQuery {
-  /** 表名 */
-  tableName?: string;
-
-  /** 表描述 */
-  tableComment?: string;
-
-  /** 创建时间 */
-  createTime?: [string, string];
-}
 
 /** 数据表分页对象 */
 export interface CodeGenTableVO {

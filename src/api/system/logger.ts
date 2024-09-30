@@ -3,7 +3,6 @@ import request from "@/utils/request";
 const LOGGER_BASE_URL = "/api/v1";
 
 class LoggerAPI {
-
   /**
    * 获取登录日志分页列表
    *
@@ -56,7 +55,6 @@ class LoggerAPI {
       responseType: "arraybuffer",
     });
   }
-
 }
 
 export default LoggerAPI;
@@ -101,21 +99,6 @@ export interface LoginLogPageVO {
    * 登录日期
    */
   createTime: Date;
-}
-
-export interface LoginLogQuery extends PageQuery {
-  /**
-   * 用户名称
-   */
-  userName?: string;
-  /**
-   * 用户ip
-   */
-  userIp?: string;
-  /**
-   * 创建时间
-   * */
-  createTime?: Date;
 }
 
 /**
@@ -198,23 +181,4 @@ export interface OperateLogPageVO {
    * 执行结果
    */
   resultMsg: String;
-}
-
-export interface OperateLogQuery extends PageQuery {
-  /**
-   * 用户id
-   */
-  userId?: string;
-  /**
-   * 操作模块
-   */
-  type?: string;
-  /**
-   * 操作模块
-   */
-  module?: string;
-  /**
-   * 创建时间
-   */
-  createTime?: [];
 }

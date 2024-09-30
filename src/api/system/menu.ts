@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-import {MenuTypeEnum} from "@/enums/MenuTypeEnum";
+import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 // 菜单基础URL
 const MENU_BASE_URL = "/api/v1/menu";
 
@@ -24,7 +24,7 @@ class MenuAPI {
    * @param queryParams 查询参数
    * @returns 菜单树形列表
    */
-  static getList(queryParams: MenuQuery) {
+  static getList(queryParams: PageQuery) {
     return request<any, MenuVO[]>({
       url: `${MENU_BASE_URL}/list`,
       method: "get",
@@ -98,16 +98,9 @@ class MenuAPI {
       method: "delete",
     });
   }
-
 }
 
 export default MenuAPI;
-
-/** 菜单查询参数 */
-export interface MenuQuery {
-  /** 搜索关键字 */
-  name?: string;
-}
 
 /** 菜单视图对象 */
 export interface MenuVO {

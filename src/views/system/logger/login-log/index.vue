@@ -29,16 +29,16 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-            class="!w-240px"
+            class="!w-256px"
           />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">
-            <i-ep-search/>
+            <i-ep-search />
             搜索
           </el-button>
           <el-button @click="resetQuery">
-            <i-ep-refresh/>
+            <i-ep-refresh />
             重置
           </el-button>
         </el-form-item>
@@ -50,7 +50,7 @@
       <template #header>
         <div class="flex-x-between">
           <el-button @click="handleExport">
-            <i-ep-download/>
+            <i-ep-download />
             导出
           </el-button>
         </div>
@@ -61,7 +61,7 @@
         :data="pageData"
         :show-overflow-tooltip="true"
       >
-        <el-table-column label="日志编号" align="center" prop="id"/>
+        <el-table-column label="日志编号" align="center" prop="id" />
         <el-table-column
           label="用户名称"
           align="center"
@@ -70,26 +70,21 @@
         />
         <el-table-column label="登录类型" align="center">
           <template #default="scope">
-            <el-tag v-if="scope.row.logType === 100" type="primary"
-            >账号登录
-            </el-tag
-            >
-            <el-tag v-if="scope.row.logType === 101" type="info"
-            >社交登录
-            </el-tag
-            >
-            <el-tag v-if="scope.row.logType === 103" type="warning"
-            >短信登录
-            </el-tag
-            >
-            <el-tag v-if="scope.row.logType === 200" type="primary"
-            >主动登出
-            </el-tag
-            >
-            <el-tag v-if="scope.row.logType === 202" type="danger"
-            >强制登出
-            </el-tag
-            >
+            <el-tag v-if="scope.row.logType === 100" type="primary">
+              账号登录
+            </el-tag>
+            <el-tag v-if="scope.row.logType === 101" type="info">
+              社交登录
+            </el-tag>
+            <el-tag v-if="scope.row.logType === 103" type="warning">
+              短信登录
+            </el-tag>
+            <el-tag v-if="scope.row.logType === 200" type="primary">
+              主动登出
+            </el-tag>
+            <el-tag v-if="scope.row.logType === 202" type="danger">
+              强制登出
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -104,31 +99,26 @@
           prop="loginLocation"
           width="180"
         />
-        <el-table-column label="浏览器" align="center" prop="userAgent"/>
-        <el-table-column label="操作系统" align="center" prop="os"/>
+        <el-table-column label="浏览器" align="center" prop="userAgent" />
+        <el-table-column label="操作系统" align="center" prop="os" />
         <el-table-column label="登陆结果" align="center" prop="result">
           <template #default="scope">
             <el-tag v-if="scope.row.result === 0" type="success">成功</el-tag>
-            <el-tag v-if="scope.row.result === 10" type="info"
-            >账号或密码不正确
-            </el-tag
-            >
-            <el-tag v-if="scope.row.result === 20" type="warning"
-            >用户被禁用
-            </el-tag
-            >
-            <el-tag v-if="scope.row.result === 30" type="primary"
-            >验证码不存在
-            </el-tag
-            >
-            <el-tag v-if="scope.row.result === 31" type="danger"
-            >验证码不正确
-            </el-tag
-            >
-            <el-tag v-if="scope.row.result === 100" type="danger"
-            >未知异常
-            </el-tag
-            >
+            <el-tag v-if="scope.row.result === 10" type="info">
+              账号或密码不正确
+            </el-tag>
+            <el-tag v-if="scope.row.result === 20" type="warning">
+              用户被禁用
+            </el-tag>
+            <el-tag v-if="scope.row.result === 30" type="primary">
+              验证码不存在
+            </el-tag>
+            <el-tag v-if="scope.row.result === 31" type="danger">
+              验证码不正确
+            </el-tag>
+            <el-tag v-if="scope.row.result === 100" type="danger">
+              未知异常
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -149,12 +139,11 @@
         @pagination="handleQuery"
       />
     </el-card>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import LoggerAPI, {LoginLogPageVO, LoginLogQuery} from "@/api/system/logger";
+import LoggerAPI, { LoginLogPageVO } from "@/api/system/logger";
 
 defineOptions({
   name: "LoginLog",
@@ -165,9 +154,12 @@ const queryFormRef = ref(ElForm);
 const loading = ref(false);
 const createTime = ref([]);
 /** 用户登录日志查询参数  */
-const queryParams = reactive<LoginLogQuery>({
+const queryParams = reactive({
   pageNumber: 1,
-  pageSize: 10
+  pageSize: 10,
+  userName: undefined,
+  userIp: undefined,
+  createTime: [] as any,
 });
 
 const total = ref(0); // 数据总数
@@ -176,10 +168,11 @@ const pageData = ref<LoginLogPageVO[]>();
 /** 查询 */
 function handleQuery() {
   loading.value = true;
-  LoggerAPI.getPage(queryParams).then((data) => {
-    pageData.value = data.list;
-    total.value = data.total;
-  })
+  LoggerAPI.getPage(queryParams)
+    .then((data) => {
+      pageData.value = data.list;
+      total.value = data.total;
+    })
     .finally(() => {
       loading.value = false;
     });
@@ -206,7 +199,7 @@ function handleExport() {
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8";
 
-    const blob = new Blob([fileData], {type: fileType});
+    const blob = new Blob([fileData], { type: fileType });
     const downloadUrl = window.URL.createObjectURL(blob);
 
     const downloadLink = document.createElement("a");
@@ -224,5 +217,4 @@ function handleExport() {
 onMounted(() => {
   handleQuery();
 });
-
 </script>
