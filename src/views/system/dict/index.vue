@@ -3,9 +3,9 @@
   <div class="app-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="关键字" prop="name">
+        <el-form-item label="字典名称" prop="name">
           <el-input
-            v-model="queryParams.keywords"
+            v-model="queryParams.name"
             placeholder="字典名称"
             clearable
             @keyup.enter="handleQuery"
@@ -13,11 +13,11 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery()">
-            <i-ep-search/>
+            <i-ep-search />
             搜索
           </el-button>
-          <el-button @click="handleResetClick()">
-            <i-ep-refresh/>
+          <el-button @click="handleReset()">
+            <i-ep-refresh />
             重置
           </el-button>
         </el-form-item>
@@ -31,7 +31,7 @@
           type="success"
           @click="handleAddClick()"
         >
-          <i-ep-plus/>
+          <i-ep-plus />
           新增
         </el-button>
         <el-button
@@ -40,7 +40,7 @@
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
-          <i-ep-delete/>
+          <i-ep-delete />
           删除
         </el-button>
       </div>
@@ -52,19 +52,19 @@
         border
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column type="selection" width="55" align="center" />
 
         <el-table-column type="expand" label="字典项列表" width="100">
           <template #default="props">
             <el-table :data="props.row.dictItems">
-              <el-table-column label="字典项键" prop="name" width="200"/>
-              <el-table-column label="字典项值" prop="value" align="center"/>
-              <el-table-column label="排序" prop="sort" align="center"/>
+              <el-table-column label="字典项键" prop="name" width="200" />
+              <el-table-column label="字典项值" prop="value" align="center" />
+              <el-table-column label="排序" prop="sort" align="center" />
             </el-table>
           </template>
         </el-table-column>
-        <el-table-column label="字典名称" prop="name"/>
-        <el-table-column label="字典编码" prop="code"/>
+        <el-table-column label="字典名称" prop="name" />
+        <el-table-column label="字典编码" prop="code" />
         <el-table-column label="状态" prop="status">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
@@ -81,7 +81,7 @@
               size="small"
               @click.stop="handleEditClick(scope.row.id, scope.row.name)"
             >
-              <i-ep-edit/>
+              <i-ep-edit />
               编辑
             </el-button>
             <el-button
@@ -91,7 +91,7 @@
               size="small"
               @click.stop="handleDelete(scope.row.id)"
             >
-              <i-ep-delete/>
+              <i-ep-delete />
               删除
             </el-button>
           </template>
@@ -146,7 +146,7 @@
                 size="small"
                 @click.stop="handleAddAttrClick"
               >
-                <i-ep-plus/>
+                <i-ep-plus />
                 新增字典
               </el-button>
             </div>
@@ -160,21 +160,21 @@
             <el-table-column label="字典项名称" width="200">
               <template #default="scope">
                 <el-form-item :prop="'dictItems.' + scope.$index + '.name'">
-                  <el-input v-model="scope.row.name"/>
+                  <el-input v-model="scope.row.name" />
                 </el-form-item>
               </template>
             </el-table-column>
             <el-table-column label="字典项值" width="200">
               <template #default="scope">
                 <el-form-item :prop="'dictItems.' + scope.$index + '.value'">
-                  <el-input v-model="scope.row.value"/>
+                  <el-input v-model="scope.row.value" />
                 </el-form-item>
               </template>
             </el-table-column>
             <el-table-column label="排序">
               <template #default="scope">
                 <el-form-item :prop="'dictItems.' + scope.$index + '.sort'">
-                  <el-input v-model="scope.row.sort"/>
+                  <el-input v-model="scope.row.sort" />
                 </el-form-item>
               </template>
             </el-table-column>
@@ -204,7 +204,7 @@
                   size="small"
                   @click.stop="handleDeleteAttrClick(scope.$index)"
                 >
-                  <i-ep-delete/>
+                  <i-ep-delete />
                   删除
                 </el-button>
               </template>
@@ -224,7 +224,7 @@
 </template>
 
 <script setup lang="ts">
-import DictAPI, {DictForm, DictPageQuery, DictPageVO} from "@/api/system/dict";
+import DictAPI, { DictForm, DictPageVO } from "@/api/system/dict";
 
 defineOptions({
   name: "Dict",
@@ -238,9 +238,10 @@ const loading = ref(false);
 const ids = ref<number[]>([]);
 const total = ref(0);
 
-const queryParams = reactive<DictPageQuery>({
+const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
+  name: undefined,
 });
 
 const tableData = ref<DictPageVO[]>();
@@ -255,13 +256,13 @@ const formData = reactive<DictForm>({});
 
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
-    name: [{required: true, message: "请输入字典名称", trigger: "blur"}],
-    code: [{required: true, message: "请输入字典编码", trigger: "blur"}],
+    name: [{ required: true, message: "请输入字典名称", trigger: "blur" }],
+    code: [{ required: true, message: "请输入字典编码", trigger: "blur" }],
   };
   if (formData.dictItems) {
     formData.dictItems.forEach((attr, index) => {
       rules[`dictItems.${index}.name`] = [
-        {required: true, message: "请输入字典项名称", trigger: "blur"},
+        { required: true, message: "请输入字典项名称", trigger: "blur" },
       ];
     });
   }
@@ -282,7 +283,7 @@ function handleQuery() {
 }
 
 // 重置查询
-function handleResetClick() {
+function handleReset() {
   queryFormRef.value.resetFields();
   queryParams.pageNumber = 1;
   handleQuery();
@@ -303,6 +304,7 @@ function handleAddClick() {
  * 编辑字典
  *
  * @param id 字典ID
+ * @param name 字典名称
  */
 function handleEditClick(id: number, name: string) {
   dialog.visible = true;
@@ -369,7 +371,7 @@ function handleDelete(id?: number) {
     () => {
       DictAPI.deleteByIds(attrGroupIds).then(() => {
         ElMessage.success("删除成功");
-        handleResetClick();
+        handleReset();
       });
     },
     () => {
@@ -381,7 +383,7 @@ function handleDelete(id?: number) {
 /** 新增字典项 */
 function handleAddAttrClick() {
   formData.dictItems = formData.dictItems ?? [];
-  formData.dictItems.push({sort: 1, status: 1});
+  formData.dictItems.push({ sort: 1, status: 1 });
 }
 
 /** 删除字典项 */

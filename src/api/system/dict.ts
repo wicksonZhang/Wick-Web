@@ -9,7 +9,7 @@ class DictAPI {
    * @param queryParams 查询参数
    * @returns 字典分页结果
    */
-  static getPage(queryParams: DictPageQuery) {
+  static getPage(queryParams: PageQuery) {
     return request<any, PageResult<DictPageVO[]>>({
       url: `${DICT_BASE_URL}/types/page`,
       method: "get",
@@ -93,20 +93,9 @@ class DictAPI {
       method: "get",
     });
   }
-
 }
 
 export default DictAPI;
-
-/**
- * 字典查询参数
- */
-export interface DictPageQuery extends PageQuery {
-  /**
-   * 关键字(字典名称/编码)
-   */
-  keywords?: string;
-}
 
 /**
  * 字典分页对象

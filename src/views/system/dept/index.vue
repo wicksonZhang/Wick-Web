@@ -2,10 +2,11 @@
   <div class="app-container">
     <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="关键字" prop="keywords">
+        <el-form-item label="部门名称" prop="name">
           <el-input
-            v-model="queryParams.keywords"
+            v-model="queryParams.name"
             placeholder="部门名称"
+            clearable
             @keyup.enter="handleQuery"
           />
         </el-form-item>
@@ -17,17 +18,17 @@
             clearable
             class="!w-[100px]"
           >
-            <el-option :value="1" label="正常"/>
-            <el-option :value="0" label="禁用"/>
+            <el-option :value="1" label="正常" />
+            <el-option :value="0" label="禁用" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button class="filter-item" type="primary" @click="handleQuery">
-            <i-ep-search/>
+            <i-ep-search />
             搜索
           </el-button>
           <el-button @click="handleResetQuery">
-            <i-ep-refresh/>
+            <i-ep-refresh />
             重置
           </el-button>
         </el-form-item>
@@ -41,17 +42,16 @@
           type="success"
           @click="handleOpenDialog(0, undefined)"
         >
-          <i-ep-plus/>
+          <i-ep-plus />
           新增
-        </el-button
-        >
+        </el-button>
         <el-button
           v-hasPerm="['system:dept:delete']"
           type="danger"
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
-          <i-ep-delete/>
+          <i-ep-delete />
           删除
         </el-button>
       </template>
@@ -64,9 +64,9 @@
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center"/>
-        <el-table-column prop="name" label="部门名称"/>
-        <el-table-column prop="code" label="部门编号"/>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column prop="name" label="部门名称" />
+        <el-table-column prop="code" label="部门编号" />
         <el-table-column prop="status" label="状态">
           <template #default="scope">
             <el-tag v-if="scope.row.status === 1" type="success">正常</el-tag>
@@ -74,7 +74,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="sort" label="排序" width="100"/>
+        <el-table-column prop="sort" label="排序" width="100" />
 
         <el-table-column label="操作" fixed="right" align="left" width="200">
           <template #default="scope">
@@ -85,7 +85,7 @@
               size="small"
               @click.stop="handleOpenDialog(scope.row.id, undefined)"
             >
-              <i-ep-plus/>
+              <i-ep-plus />
               新增
             </el-button>
             <el-button
@@ -95,7 +95,7 @@
               size="small"
               @click.stop="handleOpenDialog(scope.row.parentId, scope.row.id)"
             >
-              <i-ep-edit/>
+              <i-ep-edit />
               编辑
             </el-button>
             <el-button
@@ -105,7 +105,7 @@
               size="small"
               @click.stop="handleDelete(scope.row.id)"
             >
-              <i-ep-delete/>
+              <i-ep-delete />
               删除
             </el-button>
           </template>
@@ -136,10 +136,10 @@
           />
         </el-form-item>
         <el-form-item label="部门名称" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入部门名称"/>
+          <el-input v-model="formData.name" placeholder="请输入部门名称" />
         </el-form-item>
         <el-form-item label="部门编号" prop="code">
-          <el-input v-model="formData.code" placeholder="请输入部门编号"/>
+          <el-input v-model="formData.code" placeholder="请输入部门编号" />
         </el-form-item>
         <el-form-item label="显示排序" prop="sort">
           <el-input-number
@@ -159,8 +159,8 @@
 
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="handleSubmit"> 确 定</el-button>
-          <el-button @click="handleCloseDialog"> 取 消</el-button>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
+          <el-button @click="handleCloseDialog">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -168,13 +168,12 @@
 </template>
 
 <script setup lang="ts">
-import DeptAPI, {DeptForm, DeptQuery, DeptVO} from "@/api/system/dept";
+import DeptAPI, { DeptForm, DeptVO } from "@/api/system/dept";
 
 defineOptions({
   name: "Dept",
   inheritAttrs: false,
 });
-
 
 const queryFormRef = ref(ElForm);
 const deptFormRef = ref(ElForm);
@@ -186,7 +185,12 @@ const dialog = reactive({
   visible: false,
 });
 
-const queryParams = reactive<DeptQuery>({});
+const queryParams = reactive({
+  pageNumber: 1,
+  pageSize: 10,
+  name: undefined,
+  status: undefined,
+});
 const deptList = ref<DeptVO[]>();
 
 const deptOptions = ref<OptionType[]>();
@@ -199,11 +203,11 @@ const formData = reactive<DeptForm>({
 
 const rules = reactive({
   parentId: [
-    {required: true, message: "上级部门不能为空", trigger: "change"},
+    { required: true, message: "上级部门不能为空", trigger: "change" },
   ],
-  name: [{required: true, message: "部门名称不能为空", trigger: "blur"}],
-  code: [{required: true, message: "部门编号不能为空", trigger: "blur"}],
-  sort: [{required: true, message: "显示排序不能为空", trigger: "blur"}],
+  name: [{ required: true, message: "部门名称不能为空", trigger: "blur" }],
+  code: [{ required: true, message: "部门编号不能为空", trigger: "blur" }],
+  sort: [{ required: true, message: "显示排序不能为空", trigger: "blur" }],
 });
 
 /** 查询部门 */

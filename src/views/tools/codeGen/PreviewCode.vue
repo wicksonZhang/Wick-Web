@@ -2,9 +2,7 @@
   <el-dialog v-model="dialogVisible" align-center width="80%">
     <!-- 自定义标题部分 -->
     <template #header>
-      <div class="dialog-title">
-        [{{tableName}}] 代码预览
-      </div>
+      <div class="dialog-title">[{{ tableName }}] 代码预览</div>
     </template>
 
     <div class="flex" element-loading-text="代码文件生成中...">
@@ -29,9 +27,14 @@
             <!-- 显示当前语言 -->
             <div class="language-label">{{ currentLanguage }}</div>
             <!-- 一键复制按钮 -->
-            <el-link type="primary" class="copy-button" :underline="false" @click="handleCopyCode">
+            <el-link
+              type="primary"
+              class="copy-button"
+              :underline="false"
+              @click="handleCopyCode"
+            >
               <el-icon>
-                <CopyDocument/>
+                <CopyDocument />
               </el-icon>
               一键复制
             </el-link>
@@ -52,37 +55,32 @@
       </el-col>
     </div>
   </el-dialog>
-
 </template>
 
 <script lang="ts" setup>
-import 'codemirror/mode/clike/clike';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/idea.css';
-import 'codemirror/mode/javascript/javascript.js';
-import 'codemirror/mode/htmlmixed/htmlmixed.js';
-import 'codemirror/mode/css/css.js';
-import 'codemirror/mode/xml/xml.js';
-import 'codemirror/addon/fold/foldcode.js';
-import 'codemirror/addon/fold/foldgutter.js';
-import 'codemirror/addon/fold/brace-fold.js';
-import 'codemirror/addon/fold/foldgutter.css';
+import "codemirror/mode/clike/clike";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/idea.css";
+import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/htmlmixed/htmlmixed.js";
+import "codemirror/mode/css/css.js";
+import "codemirror/mode/xml/xml.js";
+import "codemirror/addon/fold/foldcode.js";
+import "codemirror/addon/fold/foldgutter.js";
+import "codemirror/addon/fold/brace-fold.js";
+import "codemirror/addon/fold/foldgutter.css";
 
-import Codemirror, {CmComponentRef} from 'codemirror-editor-vue3';
-import {useClipboard} from '@vueuse/core';
-import {EditorConfiguration} from "codemirror";
+import Codemirror, { CmComponentRef } from "codemirror-editor-vue3";
+import { EditorConfiguration } from "codemirror";
 import GeneratorAPI from "@/api/tools/generator";
-import {ref} from "vue";
 
 // 弹窗和加载状态的控制
 const dialogVisible = ref(false);
 const loading = ref(false);
-const tableName = ref(''); // 当前编辑的表名
-
+const tableName = ref(""); // 当前编辑的表名
 
 // 当前代码语言和代码内容
-const currentLanguage = ref('');
-const code = ref('');
+const currentLanguage = ref("");
 
 // 树形结构数据
 const treeData = ref<TreeNode[]>([]);
@@ -90,11 +88,11 @@ const treeData = ref<TreeNode[]>([]);
 // Codemirror 配置和引用
 const cmRef = ref<CmComponentRef>();
 const cmOptions: EditorConfiguration = {
-  mode: 'text/x-java', // 初始模式
+  mode: "text/x-java", // 初始模式
   tabSize: 4,
   lineNumbers: true,
-  theme: 'idea',
-  gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+  theme: "idea",
+  gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 };
 
 // 树节点类型定义
@@ -107,8 +105,8 @@ interface TreeNode {
 // 节点点击事件处理函数
 function handleNodeClick(data: TreeNode) {
   if (!data.children?.length) {
-    code.value = data.content || ''; // 更新代码内容
-    currentLanguage.value = data.label.split('.').pop() || ''; // 更新当前语言
+    code.value = data.content || ""; // 更新代码内容
+    currentLanguage.value = data.label.split(".").pop() || ""; // 更新当前语言
     updateCodeMirrorMode(); // 根据文件类型更新 Codemirror 模式
   }
 }
@@ -125,8 +123,8 @@ async function open(id: number, name: string) {
 
     const firstLeafNode = findFirstLeafNode(treeData.value);
     if (firstLeafNode) {
-      code.value = firstLeafNode.content || '';
-      currentLanguage.value = firstLeafNode.label.split('.').pop() || '';
+      code.value = firstLeafNode.content || "";
+      currentLanguage.value = firstLeafNode.label.split(".").pop() || "";
       updateCodeMirrorMode();
     }
   } finally {
@@ -134,34 +132,42 @@ async function open(id: number, name: string) {
   }
 }
 
-defineExpose({open});
+defineExpose({ open });
 
 // 根据文件类型设置 Codemirror 模式
 function updateCodeMirrorMode() {
   const modeMap: { [key: string]: string } = {
-    java: 'text/x-java',
-    xml: 'application/xml',
-    ts: 'text/typescript',
-    vue: 'text/x-vue',
-    sql: 'text/x-sql',
-    js: 'text/javascript',
-    javascript: 'text/javascript',
+    java: "text/x-java",
+    xml: "application/xml",
+    ts: "text/typescript",
+    vue: "text/x-vue",
+    sql: "text/x-sql",
+    js: "text/javascript",
+    javascript: "text/javascript",
   };
-  cmOptions.mode = modeMap[currentLanguage.value] || 'text/plain';
+  cmOptions.mode = modeMap[currentLanguage.value] || "text/plain";
 }
 
 // 一键复制
-const {copy, copied} = useClipboard();
+const { copy, copied } = useClipboard();
+const code = ref();
 const handleCopyCode = () => {
   if (code.value) copy(code.value);
 };
 
 // 构建树形结构
-function buildTree(data: { path: string; packagePath: string; fileName: string; content: string }[]): TreeNode[] {
+function buildTree(
+  data: {
+    path: string;
+    packagePath: string;
+    fileName: string;
+    content: string;
+  }[]
+): TreeNode[] {
   const root: TreeNode[] = [];
 
   data.forEach((item) => {
-    const separator = item.path.includes('/') ? '/' : '\\';
+    const separator = item.path.includes("/") ? "/" : "\\";
     const parts = item.path.split(separator);
     const mergedParts = mergePaths(parts, separator, item.packagePath);
 
@@ -170,25 +176,29 @@ function buildTree(data: { path: string; packagePath: string; fileName: string; 
     mergedParts.forEach((part) => {
       let node = currentNodeArray.find((child) => child.label === part);
       if (!node) {
-        node = {label: part, children: []};
+        node = { label: part, children: [] };
         currentNodeArray.push(node);
       }
       currentNodeArray = node.children!;
     });
 
-    currentNodeArray.push({label: item.fileName, content: item.content});
+    currentNodeArray.push({ label: item.fileName, content: item.content });
   });
 
   return root;
 }
 
 // 合并特殊路径
-function mergePaths(parts: string[], separator: string, packagePath: string): string[] {
+function mergePaths(
+  parts: string[],
+  separator: string,
+  packagePath: string
+): string[] {
   const specialPaths = [
     `src${separator}main`,
-    'java',
-    'wick-boot',
-    'wick-web',
+    "java",
+    "wick-boot",
+    "wick-web",
     packagePath,
   ];
 
@@ -219,15 +229,15 @@ function findFirstLeafNode(nodes: TreeNode[]): TreeNode | null {
 
 // 监听复制状态并显示提示信息
 watch(copied, () => {
-  if (copied.value) ElMessage.success('复制成功');
+  if (copied.value) ElMessage.success("复制成功");
 });
 </script>
 
 <style lang="scss" scoped>
 .dialog-title {
-  text-align: left;
   font-size: 15px;
   font-weight: bold;
+  text-align: left;
 }
 
 .editor-wrapper {

@@ -145,7 +145,7 @@
               同步
             </el-button>
             <el-button
-              v-hasPerm="['tools:code-gen:codeGen']"
+              v-hasPerm="['tools:code-gen:download']"
               link
               type="primary"
               size="small"
@@ -180,10 +180,7 @@
 <script lang="ts" setup>
 import ImportTable from "@/views/tools/codeGen/ImportTable.vue";
 import PreviewCode from "@/views/tools/codeGen/PreviewCode.vue";
-import GeneratorAPI, {
-  CodeGenTablePageQuery,
-  CodeGenTableVO,
-} from "@/api/tools/generator";
+import GeneratorAPI, { CodeGenTableVO } from "@/api/tools/generator";
 import EditTable from "@/views/tools/codeGen/EditTable.vue";
 
 const queryRef = ref(ElForm); // 表单引用，用于重置表单
@@ -193,10 +190,13 @@ const removeIds = ref([]);
 const total = ref(0); // 表格数据总数
 const tableNames = ref([]); // 选中表格的名称
 const createTime = ref([]); // 创建时间范围
-const queryParams = reactive<CodeGenTablePageQuery>({
+const queryParams = reactive({
   // 查询参数，包括分页信息
   pageNumber: 1,
   pageSize: 10,
+  tableName: undefined,
+  tableComment: undefined,
+  createTime: [] as any,
 });
 
 /** 获取表格数据 */
