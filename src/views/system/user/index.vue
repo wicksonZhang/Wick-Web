@@ -10,38 +10,51 @@
       <!-- 用户列表 -->
       <el-col :lg="20" :xs="24">
         <div class="search-container">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="关键字" prop="keywords">
+          <el-form
+            ref="queryFormRef"
+            :model="queryParams"
+            :inline="true"
+            label-width="68px"
+          >
+            <el-form-item label="用户名" prop="username">
               <el-input
-                v-model="queryParams.keywords"
-                placeholder="用户名/昵称/手机号"
+                v-model="queryParams.username"
+                placeholder="用户名"
                 clearable
-                style="width: 200px"
+                class="!w-240px"
                 @keyup.enter="handleQuery"
               />
             </el-form-item>
-
+            <el-form-item label="手机号" prop="mobile">
+              <el-input
+                v-model="queryParams.mobile"
+                placeholder="手机号"
+                clearable
+                class="!w-240px"
+                @keyup.enter="handleQuery"
+              />
+            </el-form-item>
             <el-form-item label="状态" prop="status">
               <el-select
                 v-model="queryParams.status"
                 placeholder="全部"
                 clearable
-                class="!w-[100px]"
+                class="!w-256px"
               >
                 <el-option label="正常" :value="1" />
                 <el-option label="禁用" :value="0" />
               </el-select>
             </el-form-item>
 
-            <el-form-item label="创建时间">
+            <el-form-item label="创建时间" prop="createTime">
               <el-date-picker
-                :editable="false"
-                class="!w-[240px]"
-                v-model="queryParams.createTimeRange"
+                v-model="queryParams.createTime"
                 type="daterange"
-                start-placeholder="开始时间"
-                end-placeholder="截止时间"
-                value-format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+                class="!w-256px"
               />
             </el-form-item>
 
@@ -82,12 +95,16 @@
               </div>
               <div>
                 <el-button class="ml-3" @click="handleOpenImportDialog">
-                  <template #icon><i-ep-upload /></template>
+                  <template #icon>
+                    <i-ep-upload />
+                  </template>
                   导入
                 </el-button>
 
                 <el-button class="ml-3" @click="handleExport">
-                  <template #icon><i-ep-download /></template>
+                  <template #icon>
+                    <i-ep-download />
+                  </template>
                   导出
                 </el-button>
               </div>
@@ -270,7 +287,11 @@
         <el-form-item label="状态" prop="status">
           <el-switch
             v-model="formData.status"
-            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #eceef1"
+            style="
+
+              --el-switch-on-color: #13ce66;
+              --el-switch-off-color: #eceef1;
+            "
             inline-prompt
             :active-value="1"
             :inactive-value="0"
@@ -302,7 +323,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import UserAPI, {UserForm, UserPageQuery, UserPageVO} from "@/api/system/user";
+import UserAPI, { UserForm, UserPageVO } from "@/api/system/user";
 import DeptAPI from "@/api/system/dept";
 
 const queryFormRef = ref(ElForm);
@@ -317,9 +338,14 @@ const deptOptions = ref<OptionType[]>();
 /** 角色下拉选项 */
 const roleOptions = ref<OptionType[]>();
 /** 用户查询参数  */
-const queryParams = reactive<UserPageQuery>({
+const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
+  username: undefined,
+  mobile: undefined,
+  status: undefined,
+  deptId: undefined,
+  createTime: [],
 });
 
 /**  用户弹窗对象  */
@@ -498,6 +524,7 @@ function handleDelete(id?: number) {
     }
   );
 }
+
 /** 打开导入弹窗 */
 function handleOpenImportDialog() {
   importDialogVisible.value = true;
