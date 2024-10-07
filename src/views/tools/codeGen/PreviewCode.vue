@@ -8,13 +8,14 @@
     <div class="flex" element-loading-text="代码文件生成中...">
       <!-- 左侧树形菜单 -->
       <el-col :span="6">
-        <el-scrollbar :style="{ height: 'calc(80vh - 50px)' }" always>
+        <el-scrollbar class="scroll-container" always>
           <el-tree
             ref="treeRef"
             :data="treeData"
             default-expand-all
             highlight-current
             @node-click="handleNodeClick"
+            class="tree-menu"
           />
         </el-scrollbar>
       </el-col>
@@ -106,7 +107,7 @@ interface TreeNode {
 function handleNodeClick(data: TreeNode) {
   if (!data.children?.length) {
     code.value = data.content || ""; // 更新代码内容
-    currentLanguage.value = data.label.split(".").pop() || ""; // 更新当前语言
+    currentLanguage.value = data.label; // 更新当前语言
     updateCodeMirrorMode(); // 根据文件类型更新 Codemirror 模式
   }
 }
@@ -124,7 +125,7 @@ async function open(id: number, name: string) {
     const firstLeafNode = findFirstLeafNode(treeData.value);
     if (firstLeafNode) {
       code.value = firstLeafNode.content || "";
-      currentLanguage.value = firstLeafNode.label.split(".").pop() || "";
+      currentLanguage.value = firstLeafNode.label;
       updateCodeMirrorMode();
     }
   } finally {
@@ -238,6 +239,24 @@ watch(copied, () => {
   font-size: 15px;
   font-weight: bold;
   text-align: left;
+}
+
+.scroll-container {
+  height: calc(80vh - 50px);
+  overflow-x: auto; /* 启用水平滚动条 */
+  white-space: nowrap; /* 禁止换行 */
+}
+
+.tree-menu {
+  display: inline-block; /* 让树形菜单宽度自适应内容 */
+  width: max-content; /* 内容多宽，容器就多宽 */
+}
+
+.el-tree-node__label {
+  max-width: 100%; /* 限制最大宽度 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 超出部分用省略号显示 */
+  white-space: nowrap;
 }
 
 .editor-wrapper {
