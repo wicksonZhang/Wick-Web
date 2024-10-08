@@ -69,24 +69,22 @@ import "codemirror/addon/fold/foldgutter.css";
 import Codemirror, { CmComponentRef } from "codemirror-editor-vue3";
 import { EditorConfiguration } from "codemirror";
 import GeneratorAPI from "@/api/tools/generator";
-import { ElMessage } from "element-plus";
 
-// 弹窗和加载状态
+// 弹窗和加载状态的控制
 const dialogVisible = ref(false);
 const loading = ref(false);
-const tableName = ref("");
+const tableName = ref(""); // 当前编辑的表名
 
 // 当前代码语言和代码内容
 const currentLanguage = ref("");
-const code = ref("");
 
 // 树形结构数据
-const treeData = ref([]);
+const treeData = ref<TreeNode[]>([]);
 
-// Codemirror 配置
+// Codemirror 配置和引用
 const cmRef = ref<CmComponentRef>();
 const cmOptions: EditorConfiguration = {
-  mode: "text/x-java",
+  mode: "text/x-java", // 初始模式
   tabSize: 4,
   lineNumbers: true,
   theme: "idea",
@@ -100,28 +98,12 @@ interface TreeNode {
   children?: TreeNode[];
 }
 
-// 文件类型与 Codemirror 模式映射
-const modeMap = {
-  java: "text/x-java",
-  xml: "application/xml",
-  ts: "text/typescript",
-  vue: "text/x-vue",
-  sql: "text/x-sql",
-  js: "text/javascript",
-  javascript: "text/javascript",
-};
-
-// 更新 Codemirror 编辑器的模式
-function updateCodeMirrorMode() {
-  cmOptions.mode = modeMap[currentLanguage.value] || "text/plain";
-}
-
-// 节点点击处理
+// 节点点击事件处理函数
 function handleNodeClick(data: TreeNode) {
   if (!data.children?.length) {
-    code.value = data.content || "";
-    currentLanguage.value = data.label;
-    updateCodeMirrorMode();
+    code.value = data.content || ""; // 更新代码内容
+    currentLanguage.value = data.label; // 更新当前语言
+    updateCodeMirrorMode(); // 根据文件类型更新 Codemirror 模式
   }
 }
 
@@ -131,9 +113,9 @@ async function open(id: number, name: string) {
   loading.value = true;
   treeData.value = [];
   try {
-    const data = await GeneratorAPI.getPreviewData(id);
+    const data = await GeneratorAPI.getPreviewData(id); // 获取代码预览数据
     tableName.value = name;
-    treeData.value = buildTree(data);
+    treeData.value = buildTree(data); // 构建文件树
 
     const firstLeafNode = findFirstLeafNode(treeData.value);
     if (firstLeafNode) {
@@ -148,25 +130,44 @@ async function open(id: number, name: string) {
 
 defineExpose({ open });
 
+// 根据文件类型设置 Codemirror 模式
+function updateCodeMirrorMode() {
+  const modeMap: { [key: string]: string } = {
+    java: "text/x-java",
+    xml: "application/xml",
+    ts: "text/typescript",
+    vue: "text/x-vue",
+    sql: "text/x-sql",
+    js: "text/javascript",
+    javascript: "text/javascript",
+  };
+  cmOptions.mode = modeMap[currentLanguage.value] || "text/plain";
+}
+
 // 一键复制
 const { copy, copied } = useClipboard();
+const code = ref();
 const handleCopyCode = () => {
   if (code.value) copy(code.value);
 };
 
-// 监听复制状态并显示提示信息
-watch(copied, () => {
-  if (copied.value) ElMessage.success("复制成功");
-});
-
 // 构建树形结构
-function buildTree(data) {
-  const root = [];
+function buildTree(
+  data: {
+    path: string;
+    packagePath: string;
+    fileName: string;
+    content: string;
+  }[]
+): TreeNode[] {
+  const root: TreeNode[] = [];
+
   data.forEach((item) => {
     const separator = item.path.includes("/") ? "/" : "\\";
     const parts = item.path.split(separator);
     const mergedParts = mergePaths(parts, separator, item.packagePath);
 
+    // 构建树节点
     let currentNodeArray = root;
     mergedParts.forEach((part) => {
       let node = currentNodeArray.find((child) => child.label === part);
@@ -176,6 +177,7 @@ function buildTree(data) {
       }
       currentNodeArray = node.children!;
     });
+
     currentNodeArray.push({ label: item.fileName, content: item.content });
   });
 
@@ -183,7 +185,11 @@ function buildTree(data) {
 }
 
 // 合并特殊路径
-function mergePaths(parts, separator, packagePath) {
+function mergePaths(
+  parts: string[],
+  separator: string,
+  packagePath: string
+): string[] {
   const specialPaths = [
     `src${separator}main`,
     "java",
@@ -192,8 +198,8 @@ function mergePaths(parts, separator, packagePath) {
     packagePath,
   ];
 
-  const mergedParts = [];
-  let buffer = [];
+  const mergedParts: string[] = [];
+  let buffer: string[] = [];
 
   parts.forEach((part) => {
     buffer.push(part);
@@ -208,7 +214,7 @@ function mergePaths(parts, separator, packagePath) {
 }
 
 // 查找第一个叶子节点
-function findFirstLeafNode(nodes) {
+function findFirstLeafNode(nodes: TreeNode[]): TreeNode | null {
   for (const node of nodes) {
     if (!node.children?.length) return node;
     const leafNode = findFirstLeafNode(node.children);
@@ -216,6 +222,11 @@ function findFirstLeafNode(nodes) {
   }
   return null;
 }
+
+// 监听复制状态并显示提示信息
+watch(copied, () => {
+  if (copied.value) ElMessage.success("复制成功");
+});
 </script>
 
 <style lang="scss" scoped>
