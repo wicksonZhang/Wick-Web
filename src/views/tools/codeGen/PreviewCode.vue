@@ -69,9 +69,7 @@ import "codemirror/addon/fold/foldgutter.css";
 import Codemirror, { CmComponentRef } from "codemirror-editor-vue3";
 import { EditorConfiguration } from "codemirror";
 import GeneratorAPI from "@/api/tools/generator";
-import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
-import { useClipboard } from "@vueuse/core";
 
 // 弹窗和加载状态
 const dialogVisible = ref(false);
