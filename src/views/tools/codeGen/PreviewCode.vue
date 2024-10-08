@@ -81,6 +81,10 @@ const currentLanguage = ref("");
 // 树形结构数据
 const treeData = ref<TreeNode[]>([]);
 
+// 一键复制
+const { copy, copied } = useClipboard();
+const code = ref();
+
 // Codemirror 配置和引用
 const cmRef = ref<CmComponentRef>();
 const cmOptions: EditorConfiguration = {
@@ -97,6 +101,11 @@ interface TreeNode {
   content?: string;
   children?: TreeNode[];
 }
+
+// 监听复制状态并显示提示信息
+watch(copied, () => {
+  if (copied.value) ElMessage.success("复制成功");
+});
 
 // 节点点击事件处理函数
 function handleNodeClick(data: TreeNode) {
@@ -143,13 +152,6 @@ function updateCodeMirrorMode() {
   };
   cmOptions.mode = modeMap[currentLanguage.value] || "text/plain";
 }
-
-// 一键复制
-const { copy, copied } = useClipboard();
-const code = ref();
-const handleCopyCode = () => {
-  if (code.value) copy(code.value);
-};
 
 // 构建树形结构
 function buildTree(
@@ -223,9 +225,14 @@ function findFirstLeafNode(nodes: TreeNode[]): TreeNode | null {
   return null;
 }
 
-// 监听复制状态并显示提示信息
-watch(copied, () => {
-  if (copied.value) ElMessage.success("复制成功");
+/** 一键复制 */
+const handleCopyCode = () => {
+  if (code.value) copy(code.value);
+};
+
+/** 组件挂载后执行 */
+onMounted(() => {
+  cmRef.value?.destroy();
 });
 </script>
 
