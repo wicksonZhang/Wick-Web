@@ -150,11 +150,14 @@ function updateCodeMirrorMode() {
 }
 
 // 一键复制
-const { copy, copied } = useClipboard();
+const { copy } = useClipboard();
 const code = ref();
-const handleCopyCode = () => {
-  if (code.value) copy(code.value);
-};
+function handleCopyCode() {
+  if (code.value) {
+    copy(code.value);
+    ElMessage.success("复制成功");
+  }
+}
 
 // 构建树形结构
 function buildTree(
@@ -227,11 +230,6 @@ function findFirstLeafNode(nodes: TreeNode[]): TreeNode | null {
   }
   return null;
 }
-
-// 监听复制状态并显示提示信息
-watch(copied, () => {
-  if (copied.value) ElMessage.success("复制成功");
-});
 </script>
 
 <style lang="scss" scoped>
