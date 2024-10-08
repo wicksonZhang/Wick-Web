@@ -86,6 +86,10 @@ const currentLanguage = ref("");
 // 树形结构数据
 const treeData = ref<TreeNode[]>([]);
 
+// 一键复制
+const { copy, copied } = useClipboard();
+const code = ref();
+
 // Codemirror 配置和引用
 const cmRef = ref<CmComponentRef>();
 const cmOptions: EditorConfiguration = {
@@ -95,6 +99,12 @@ const cmOptions: EditorConfiguration = {
   theme: "idea",
   gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 };
+
+watch(copied, () => {
+  if (copied.value) {
+    ElMessage.success("复制成功");
+  }
+});
 
 // 树节点类型定义
 interface TreeNode {
@@ -148,16 +158,6 @@ function updateCodeMirrorMode() {
   };
   cmOptions.mode = modeMap[currentLanguage.value] || "text/plain";
 }
-
-// 一键复制
-const { copy, copied } = useClipboard();
-const code = ref();
-
-watch(copied, () => {
-  if (copied.value) {
-    ElMessage.success("复制成功");
-  }
-});
 
 // 构建树形结构
 function buildTree(
