@@ -54,6 +54,10 @@
 </template>
 
 <script lang="ts" setup>
+defineOptions({
+  name: "PreviewCode",
+});
+
 import "codemirror/mode/clike/clike";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/idea.css";
@@ -66,6 +70,7 @@ import "codemirror/addon/fold/foldgutter.js";
 import "codemirror/addon/fold/brace-fold.js";
 import "codemirror/addon/fold/foldgutter.css";
 
+import { useClipboard } from "@vueuse/core";
 import Codemirror from "codemirror-editor-vue3";
 import type { CmComponentRef } from "codemirror-editor-vue3";
 import type { EditorConfiguration } from "codemirror";
