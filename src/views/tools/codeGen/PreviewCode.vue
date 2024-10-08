@@ -66,8 +66,9 @@ import "codemirror/addon/fold/foldgutter.js";
 import "codemirror/addon/fold/brace-fold.js";
 import "codemirror/addon/fold/foldgutter.css";
 
-import Codemirror, { CmComponentRef } from "codemirror-editor-vue3";
-import { EditorConfiguration } from "codemirror";
+import Codemirror from "codemirror-editor-vue3";
+import type { CmComponentRef } from "codemirror-editor-vue3";
+import type { EditorConfiguration } from "codemirror";
 import GeneratorAPI from "@/api/tools/generator";
 
 // 弹窗和加载状态的控制
