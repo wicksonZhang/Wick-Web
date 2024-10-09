@@ -20,7 +20,11 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">
+          <el-button
+            v-hasPerm="['system:user:query']"
+            type="primary"
+            @click="handleQuery"
+          >
             <i-ep-search />
             搜索
           </el-button>
