@@ -12,12 +12,19 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery()">
-            <i-ep-search />
+          <el-button
+            v-hasPerm="['system:dict_type:query']"
+            type="primary"
+            @click="handleQuery()"
+          >
+            <template #icon><Search /></template>
             搜索
           </el-button>
-          <el-button @click="handleReset()">
-            <i-ep-refresh />
+          <el-button
+            v-hasPerm="['system:dict_type:query']"
+            @click="handleReset()"
+          >
+            <template #icon><Refresh /></template>
             重置
           </el-button>
         </el-form-item>
@@ -31,7 +38,9 @@
           type="success"
           @click="handleAddClick()"
         >
-          <i-ep-plus />
+          <el-icon>
+            <Plus />
+          </el-icon>
           新增
         </el-button>
         <el-button
@@ -40,7 +49,9 @@
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
-          <i-ep-delete />
+          <el-icon>
+            <Delete />
+          </el-icon>
           删除
         </el-button>
       </div>
@@ -81,7 +92,7 @@
               size="small"
               @click.stop="handleEditClick(scope.row.id, scope.row.name)"
             >
-              <i-ep-edit />
+              <template #icon><Edit /></template>
               编辑
             </el-button>
             <el-button
@@ -91,7 +102,7 @@
               size="small"
               @click.stop="handleDelete(scope.row.id)"
             >
-              <i-ep-delete />
+              <template #icon><Delete /></template>
               删除
             </el-button>
           </template>
@@ -204,7 +215,7 @@
                   size="small"
                   @click.stop="handleDeleteAttrClick(scope.$index)"
                 >
-                  <i-ep-delete />
+                  <template #icon><Delete /></template>
                   删除
                 </el-button>
               </template>

@@ -58,12 +58,19 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">
-            <i-ep-search />
+          <el-button
+            v-hasPerm="['system:operate-log:query']"
+            type="primary"
+            @click="handleQuery"
+          >
+            <template #icon><Search /></template>
             搜索
           </el-button>
-          <el-button @click="resetQuery">
-            <i-ep-refresh />
+          <el-button
+            v-hasPerm="['system:operate-log:query']"
+            @click="resetQuery"
+          >
+            <template #icon><Refresh /></template>
             重置
           </el-button>
         </el-form-item>
@@ -78,8 +85,11 @@
     >
       <template #header>
         <div class="flex-x-between">
-          <el-button @click="handleExport">
-            <i-ep-download />
+          <el-button
+            v-hasPerm="['system:operate-log:export']"
+            @click="handleExport"
+          >
+            <template #icon><Download /></template>
             导出
           </el-button>
         </div>
@@ -134,9 +144,10 @@
             <span>{{ scope.row.duration }} ms</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" fixed="right" width="60">
+        <el-table-column label="操作" align="center" fixed="right" width="85">
           <template #default="scope">
             <el-button link type="primary" @click="openDetail(scope.row)">
+              <template #icon><View /></template>
               详情
             </el-button>
           </template>

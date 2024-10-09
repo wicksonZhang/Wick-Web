@@ -1,6 +1,6 @@
 <!-- 部门树 -->
 <template>
-  <el-card shadow="never" class="table-container">
+  <el-card shadow="never">
     <el-input v-model="deptName" placeholder="部门名称" clearable>
       <template #prefix>
         <i-ep-search />

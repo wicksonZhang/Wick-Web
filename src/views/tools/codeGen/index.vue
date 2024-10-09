@@ -37,10 +37,21 @@
         </el-form-item>
         <!-- 搜索与重置按钮 -->
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">
+          <el-button
+            v-hasPerm="['tools:code-gen:query']"
+            type="primary"
+            icon="Search"
+            @click="handleQuery"
+          >
             搜索
           </el-button>
-          <el-button icon="Refresh" @click="handleResetQuery">重置</el-button>
+          <el-button
+            v-hasPerm="['tools:code-gen:query']"
+            icon="Refresh"
+            @click="handleResetQuery"
+          >
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -106,6 +117,7 @@
         <el-table-column label="操作" align="center" width="350">
           <template #default="scope">
             <el-button
+              v-hasPerm="['tools:code-gen:preview']"
               link
               type="success"
               size="small"

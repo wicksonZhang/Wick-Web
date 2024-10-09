@@ -59,12 +59,19 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="handleQuery">
-                <i-ep-search />
+              <el-button
+                v-hasPerm="['system:user:query']"
+                type="primary"
+                @click="handleQuery"
+              >
+                <template #icon><Search /></template>
                 搜索
               </el-button>
-              <el-button @click="handleResetQuery">
-                <i-ep-refresh />
+              <el-button
+                v-hasPerm="['system:user:query']"
+                @click="handleResetQuery"
+              >
+                <template #icon><Refresh /></template>
                 重置
               </el-button>
             </el-form-item>
@@ -80,7 +87,9 @@
                   type="success"
                   @click="handleOpenDialog()"
                 >
-                  <i-ep-plus />
+                  <el-icon>
+                    <Plus />
+                  </el-icon>
                   新增
                 </el-button>
                 <el-button
@@ -89,22 +98,28 @@
                   :disabled="removeIds.length === 0"
                   @click="handleDelete()"
                 >
-                  <i-ep-delete />
+                  <el-icon>
+                    <Delete />
+                  </el-icon>
                   删除
                 </el-button>
               </div>
               <div>
-                <el-button class="ml-3" @click="handleOpenImportDialog">
-                  <template #icon>
-                    <i-ep-upload />
-                  </template>
+                <el-button
+                  v-hasPerm="['system:user:import']"
+                  class="ml-3"
+                  @click="handleOpenImportDialog"
+                >
+                  <template #icon><Upload /></template>
                   导入
                 </el-button>
 
-                <el-button class="ml-3" @click="handleExport">
-                  <template #icon>
-                    <i-ep-download />
-                  </template>
+                <el-button
+                  v-hasPerm="['system:user:export']"
+                  class="ml-3"
+                  @click="handleExport"
+                >
+                  <template #icon><Download /></template>
                   导出
                 </el-button>
               </div>
@@ -179,7 +194,7 @@
                   link
                   @click="hancleResetPassword(scope.row)"
                 >
-                  <i-ep-refresh-left />
+                  <template #icon><RefreshLeft /></template>
                   重置密码
                 </el-button>
                 <el-button
@@ -189,7 +204,7 @@
                   size="small"
                   @click="handleOpenDialog(scope.row.id)"
                 >
-                  <i-ep-edit />
+                  <template #icon><Edit /></template>
                   编辑
                 </el-button>
                 <el-button
@@ -199,7 +214,7 @@
                   size="small"
                   @click="handleDelete(scope.row.id)"
                 >
-                  <i-ep-delete />
+                  <template #icon><Delete /></template>
                   删除
                 </el-button>
               </template>

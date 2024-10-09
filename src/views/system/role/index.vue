@@ -25,11 +25,14 @@
             type="primary"
             @click="handleQuery"
           >
-            <i-ep-search />
+            <template #icon><Search /></template>
             搜索
           </el-button>
-          <el-button @click="handleResetQuery">
-            <i-ep-refresh />
+          <el-button
+            v-hasPerm="['system:user:query']"
+            @click="handleResetQuery"
+          >
+            <template #icon><Refresh /></template>
             重置
           </el-button>
         </el-form-item>
@@ -43,7 +46,9 @@
           type="success"
           @click="handleOpenDialog()"
         >
-          <i-ep-plus />
+          <el-icon>
+            <Plus />
+          </el-icon>
           新增
         </el-button>
         <el-button
@@ -52,7 +57,9 @@
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
-          <i-ep-delete />
+          <el-icon>
+            <Delete />
+          </el-icon>
           删除
         </el-button>
       </template>
@@ -84,7 +91,7 @@
               link
               @click="handleOpenAssignPermDialog(scope.row)"
             >
-              <i-ep-position />
+              <template #icon><Position /></template>
               分配权限
             </el-button>
             <el-button
@@ -94,7 +101,7 @@
               link
               @click="handleOpenDialog(scope.row.id)"
             >
-              <i-ep-edit />
+              <template #icon><Edit /></template>
               编辑
             </el-button>
             <el-button
@@ -104,7 +111,7 @@
               link
               @click="handleDelete(scope.row.id)"
             >
-              <i-ep-delete />
+              <template #icon><Delete /></template>
               删除
             </el-button>
           </template>
