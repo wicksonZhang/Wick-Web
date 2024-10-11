@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
 // 菜单基础URL
-const MENU_BASE_URL = "/api/v1/menu";
+const MENU_BASE_URL = "/api/v1/system/menu";
 
 class MenuAPI {
   /**

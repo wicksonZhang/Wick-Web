@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const LOGGER_BASE_URL = "/api/v1";
+const LOGGER_BASE_URL = "/api/v1/system";
 
 class LoggerAPI {
   /**

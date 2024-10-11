@@ -7,16 +7,16 @@
 
     <div class="dialog-content">
       <!-- 左侧树形菜单 -->
-      <el-col :span="6" class="tree-menu">
-        <el-scrollbar class="scroll-container">
-          <el-tree
-            ref="treeRef"
-            :data="treeData"
-            default-expand-all
-            highlight-current
-            @node-click="handleNodeClick"
-          />
-        </el-scrollbar>
+      <el-col :span="6">
+          <el-scrollbar>
+            <el-tree
+              ref="treeRef"
+              :data="treeData"
+              default-expand-all
+              highlight-current
+              @node-click="handleNodeClick"
+            />
+          </el-scrollbar>
       </el-col>
 
       <!-- 右侧代码编辑器 -->
@@ -32,22 +32,20 @@
             @click="handleCopyCode"
           >
             <el-icon>
-              <CopyDocument />
+              <CopyDocument/>
             </el-icon>
             一键复制
           </el-link>
         </div>
 
         <!-- 代码显示区域 -->
-        <el-scrollbar class="code-scrollbar">
-          <Codemirror
-            v-model:value="code"
-            :options="cmOptions"
-            :readonly="true"
-            :height="1000"
-            ref="cmRef"
-          />
-        </el-scrollbar>
+        <Codemirror
+          v-model:value="code"
+          :options="cmOptions"
+          :readonly="true"
+          :height="1000"
+          ref="cmRef"
+        />
       </el-col>
     </div>
   </el-dialog>
@@ -71,8 +69,8 @@ import "codemirror/addon/fold/brace-fold.js";
 import "codemirror/addon/fold/foldgutter.css";
 
 import Codemirror from "codemirror-editor-vue3";
-import type { CmComponentRef } from "codemirror-editor-vue3";
-import type { EditorConfiguration } from "codemirror";
+import type {CmComponentRef} from "codemirror-editor-vue3";
+import type {EditorConfiguration} from "codemirror";
 import GeneratorAPI from "@/api/tools/generator";
 
 // 弹窗和加载状态的控制
@@ -87,7 +85,7 @@ const currentLanguage = ref("");
 const treeData = ref<TreeNode[]>([]);
 
 // 一键复制
-const { copied, copy } = useClipboard({ legacy: true });
+const {copied, copy} = useClipboard({legacy: true});
 const code = ref();
 
 // Codemirror 配置和引用
@@ -95,7 +93,8 @@ const cmRef = ref<CmComponentRef>();
 const cmOptions: EditorConfiguration = {
   mode: "text/x-java", // 初始模式
   tabSize: 4,
-  lineNumbers: true,
+  lineNumbers: true, // 行号
+  lineWrapping: false, // 禁止自动换行
   theme: "idea",
   gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 };
@@ -142,7 +141,7 @@ async function open(id: number, name: string) {
   }
 }
 
-defineExpose({ open });
+defineExpose({open});
 
 // 根据文件类型设置 Codemirror 模式
 function updateCodeMirrorMode() {
@@ -179,13 +178,13 @@ function buildTree(
     mergedParts.forEach((part) => {
       let node = currentNodeArray.find((child) => child.label === part);
       if (!node) {
-        node = { label: part, children: [] };
+        node = {label: part, children: []};
         currentNodeArray.push(node);
       }
       currentNodeArray = node.children!;
     });
 
-    currentNodeArray.push({ label: item.fileName, content: item.content });
+    currentNodeArray.push({label: item.fileName, content: item.content});
   });
 
   return root;
@@ -250,13 +249,22 @@ onMounted(() => {
 
 .dialog-content {
   display: flex;
-  height: calc(90vh - 50px); /* 减去标题部分的高度 */
+  height: 800px;
+}
+
+/* 添加横向滚动条的样式 */
+.el-scrollbar {
+  max-width: 100%; /* 确保容器不超出边界 */
+  overflow-x: auto; /* 启用横向滚动条 */
+}
+
+.el-tree {
+  min-width: 350px; /* 设置树形结构的最小宽度，保证内容不会被裁切 */
 }
 
 .editor-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .editor-actions {
@@ -279,8 +287,4 @@ onMounted(() => {
   font-size: 14px;
 }
 
-.code-scrollbar {
-  flex: 1; /* 使代码区域填充剩余空间 */
-  overflow-y: auto;
-}
 </style>
