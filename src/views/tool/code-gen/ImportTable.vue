@@ -84,7 +84,7 @@
 
 <script lang="ts" setup>
 import { ElTable } from "element-plus";
-import GeneratorAPI, { CodeGenTableVO } from "@/api/tools/generator";
+import GeneratorAPI, { CodeGenTableVO } from "@/api/tool/code-gen";
 
 // 弹窗是否可见
 const visible = ref(false);

@@ -38,7 +38,7 @@
         <!-- 搜索与重置按钮 -->
         <el-form-item>
           <el-button
-            v-hasPerm="['tools:code-gen:query']"
+            v-hasPerm="['tool:code-gen:query']"
             type="primary"
             icon="Search"
             @click="handleQuery"
@@ -46,7 +46,7 @@
             搜索
           </el-button>
           <el-button
-            v-hasPerm="['tools:code-gen:query']"
+            v-hasPerm="['tool:code-gen:query']"
             icon="Refresh"
             @click="handleResetQuery"
           >
@@ -61,7 +61,7 @@
       <template #header>
         <!-- 导入按钮 -->
         <el-button
-          v-hasPerm="['tools:code-gen:import']"
+          v-hasPerm="['tool:code-gen:import']"
           type="success"
           icon="Upload"
           @click="openImportTable()"
@@ -70,7 +70,7 @@
         </el-button>
         <!-- 删除按钮，支持多选 -->
         <el-button
-          v-hasPerm="['tools:code-gen:delete']"
+          v-hasPerm="['tool:code-gen:delete']"
           type="danger"
           icon="Delete"
           :disabled="removeIds.length === 0"
@@ -117,7 +117,7 @@
         <el-table-column label="操作" align="center" width="350">
           <template #default="scope">
             <el-button
-              v-hasPerm="['tools:code-gen:preview']"
+              v-hasPerm="['tool:code-gen:preview']"
               link
               type="success"
               size="small"
@@ -127,7 +127,7 @@
               预览
             </el-button>
             <el-button
-              v-hasPerm="['tools:code-gen:update']"
+              v-hasPerm="['tool:code-gen:update']"
               link
               type="primary"
               size="small"
@@ -137,7 +137,7 @@
               编辑
             </el-button>
             <el-button
-              v-hasPerm="['tools:code-gen:delete']"
+              v-hasPerm="['tool:code-gen:delete']"
               link
               type="danger"
               size="small"
@@ -147,7 +147,7 @@
               删除
             </el-button>
             <el-button
-              v-hasPerm="['tools:code-gen:async']"
+              v-hasPerm="['tool:code-gen:async']"
               link
               type="warning"
               size="small"
@@ -157,7 +157,7 @@
               同步
             </el-button>
             <el-button
-              v-hasPerm="['tools:code-gen:download']"
+              v-hasPerm="['tool:code-gen:download']"
               link
               type="primary"
               size="small"
@@ -190,10 +190,10 @@
 </template>
 
 <script lang="ts" setup>
-import ImportTable from "@/views/tools/codeGen/ImportTable.vue";
-import PreviewCode from "@/views/tools/codeGen/PreviewCode.vue";
-import GeneratorAPI, { CodeGenTableVO } from "@/api/tools/generator";
-import EditTable from "@/views/tools/codeGen/EditTable.vue";
+import ImportTable from "@/views/tool/code-gen/ImportTable.vue";
+import PreviewCode from "@/views/tool/code-gen/PreviewCode.vue";
+import GeneratorAPI, { CodeGenTableVO } from "@/api/tool/code-gen";
+import EditTable from "@/views/tool/code-gen/EditTable.vue";
 
 const queryRef = ref(ElForm); // 表单引用，用于重置表单
 const tableList = ref<CodeGenTableVO[]>([]); // 表格数据

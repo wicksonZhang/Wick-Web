@@ -154,7 +154,7 @@
 <script lang="ts" setup>
 import MenuAPI from "@/api/system/menu";
 import { PropType } from "vue";
-import { CodeGenColumnsInfoVO, CodeGenTableInfoVO } from "@/api/tools/generator";
+import { CodeGenColumnsInfoVO, CodeGenTableInfoVO } from "@/api/tool/code-gen";
 
 // 定义组件名称
 defineOptions({ name: 'CodegenGenerateInfoForm' });

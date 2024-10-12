@@ -140,7 +140,7 @@
 
 <script lang="ts" setup>
 import DictAPI from "@/api/system/dict";
-import {CodeGenColumnsInfoVO} from "@/api/tools/generator";
+import {CodeGenColumnsInfoVO} from "@/api/tool/code-gen";
 import {PropType} from "vue";
 
 // 定义组件名称

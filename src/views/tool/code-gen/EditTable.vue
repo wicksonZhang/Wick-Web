@@ -38,7 +38,7 @@
 <script lang="ts" setup>
 import {ElMessage} from 'element-plus';
 import {BasicInfoForm, ColumnInfoForm, GenerateInfoForm} from './components';
-import GeneratorAPI, {CodeGenTableDetailsVO} from '@/api/tools/generator';
+import GeneratorAPI, {CodeGenTableDetailsVO} from '@/api/tool/code-gen';
 
 defineOptions({name: 'CodegenEditTable'})
 

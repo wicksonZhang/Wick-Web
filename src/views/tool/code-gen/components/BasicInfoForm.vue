@@ -42,7 +42,7 @@
 
 <script lang="ts" setup>
 import {PropType} from "vue";
-import {CodeGenTableInfoVO} from "@/api/tools/generator";
+import {CodeGenTableInfoVO} from "@/api/tool/code-gen";
 
 defineOptions({name: 'CodegenBasicInfoForm'})
 

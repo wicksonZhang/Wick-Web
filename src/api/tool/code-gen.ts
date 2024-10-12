@@ -98,7 +98,7 @@ class GeneratorAPI {
         response.headers["content-disposition"].split(";")[1].split("=")[1]
       );
 
-      const blob = new Blob([response.data], { type: "application/zip" });
+      const blob = new Blob([response.data], {type: "application/zip"});
       const a = document.createElement("a");
       const url = window.URL.createObjectURL(blob);
       a.href = url;

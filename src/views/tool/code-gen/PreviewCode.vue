@@ -71,7 +71,7 @@ import "codemirror/addon/fold/foldgutter.css";
 import Codemirror from "codemirror-editor-vue3";
 import type {CmComponentRef} from "codemirror-editor-vue3";
 import type {EditorConfiguration} from "codemirror";
-import GeneratorAPI from "@/api/tools/generator";
+import GeneratorAPI from "@/api/tool/code-gen";
 
 // 弹窗和加载状态的控制
 const dialogVisible = ref(false);
@@ -201,7 +201,8 @@ function mergePaths(
     "java",
     "wick-boot",
     "wick-web",
-    packagePath,
+    "wick-sync-db-flyway",
+    packagePath
   ];
 
   const mergedParts: string[] = [];
