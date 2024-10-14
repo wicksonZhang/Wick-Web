@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const DICT_BASE_URL = "/api/v1/system/dict";
+const BASE_URL = "/api/v1/system/dict/types";
 
 class DictAPI {
   /**
@@ -11,7 +11,7 @@ class DictAPI {
    */
   static getPage(queryParams: PageQuery) {
     return request<any, PageResult<DictPageVO[]>>({
-      url: `${DICT_BASE_URL}/types/page`,
+      url: `${BASE_URL}/page`,
       method: "get",
       params: queryParams,
     });
@@ -25,7 +25,7 @@ class DictAPI {
    */
   static getFormData(id: number) {
     return request<any, ResponseData<DictForm>>({
-      url: `${DICT_BASE_URL}/types/${id}`,
+      url: `${BASE_URL}/${id}`,
       method: "get",
     });
   }
@@ -37,7 +37,7 @@ class DictAPI {
    */
   static add(data: DictForm) {
     return request({
-      url: `${DICT_BASE_URL}/types/add`,
+      url: `${BASE_URL}/add`,
       method: "post",
       data: data,
     });
@@ -51,7 +51,7 @@ class DictAPI {
    */
   static update(data: DictForm) {
     return request({
-      url: `${DICT_BASE_URL}/types/update`,
+      url: `${BASE_URL}/update`,
       method: "put",
       data: data,
     });
@@ -64,7 +64,7 @@ class DictAPI {
    */
   static deleteByIds(ids: string) {
     return request({
-      url: `${DICT_BASE_URL}/types/${ids}`,
+      url: `${BASE_URL}/${ids}`,
       method: "delete",
     });
   }
@@ -76,23 +76,11 @@ class DictAPI {
    */
   static getList() {
     return request<any, OptionType[]>({
-      url: `${DICT_BASE_URL}/types/list`,
+      url: `${BASE_URL}/list`,
       method: "get",
     });
   }
 
-  /**
-   * 获取字典的数据项
-   *
-   * @param code
-   * @returns 字典数据项
-   */
-  static getOptions(code: string) {
-    return request<any, OptionType[]>({
-      url: `${DICT_BASE_URL}/data/${code}/options`,
-      method: "get",
-    });
-  }
 }
 
 export default DictAPI;
@@ -117,10 +105,6 @@ export interface DictPageVO {
    * 字典状态（1-启用，0-禁用）
    */
   status: number;
-  /**
-   * 字典项列表
-   */
-  dictItems: DictItem[];
 }
 
 /**
@@ -175,8 +159,4 @@ export interface DictForm {
    * 备注
    */
   remark?: string;
-  /**
-   * 字典数据项列表
-   */
-  dictItems?: DictItem[];
 }
