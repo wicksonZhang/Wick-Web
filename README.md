@@ -1,47 +1,3 @@
-<div align="center">
-    <img src="https://img.shields.io/badge/Vue-3.4.21-brightgreen.svg"/>
-    <img src="https://img.shields.io/badge/Vite-5.1.5-green.svg"/>
-    <img src="https://img.shields.io/badge/Element Plus-2.6.1-blue.svg"/>
-    <img src="https://img.shields.io/badge/license-MIT-green.svg"/>
-    <a href="https://gitee.com/youlaiorg" target="_blank">
-        <img src="https://img.shields.io/badge/Author-有来开源组织-orange.svg"/>
-    </a>
-    <div align="center"> 中文 | <a href="./README.en-US.md">English</div>
-</div>
-
-![](https://foruda.gitee.com/images/1708618984641188532/a7cca095_716974.png "rainbow.png")
-
-<div align="center">
-  <a target="_blank" href="http://vue3.youlai.tech">👀 在线预览</a> |  <a target="_blank" href="https://juejin.cn/post/7228990409909108793">📖 阅读文档</a>  
-</div>
-
-## 项目简介
-
-[vue3-element-admin](https://gitee.com/youlaiorg/vue3-element-admin) 是基于 Vue3 + Vite5+ TypeScript5 + Element-Plus + Pinia 等主流技术栈构建的免费开源的后台管理前端模板（配套[后端源码](https://gitee.com/youlaiorg/youlai-boot)）。
-
-
-## 项目特色
-
-- **简洁易用**：基于 [vue-element-admin](https://gitee.com/panjiachen/vue-element-admin) 升级的 Vue3 版本，无过渡封装 ，易上手。
-
-- **数据交互**：同时支持本地 `Mock` 和线上接口，配套 [Java 后端源码](https://gitee.com/youlaiorg/youlai-boot)和[在线接口文档](https://www.apifox.cn/apidoc/shared-195e783f-4d85-4235-a038-eec696de4ea5)。
-
-- **权限管理**：用户、角色、菜单、字典、部门等完善的权限系统功能。
-
-- **基础设施**：动态路由、按钮权限、国际化、代码规范、Git 提交规范、常用组件封装。
-
-- **持续更新**：2021年至今持续更新3年，及时跟进最新的技术和工具。 
-
-
-
-## 项目预览
-
-![明亮模式](https://foruda.gitee.com/images/1709651876583793739/0ba1ee1c_716974.png)
-
-![暗黑模式](https://foruda.gitee.com/images/1709651875494206224/2a2b0b53_716974.png)
-
-![接口文档](https://foruda.gitee.com/images/1687755822857820115/96054330_716974.png)
-
 ## 项目地址
 
 | 项目 | Gitee                                                        | Github                                                       | GitCode                                                      |
@@ -156,18 +112,3 @@ server {
 执行 `pnpm run commit` 唤起 git commit 交互，根据提示完成信息的输入和选择。
 
 ![](https://foruda.gitee.com/images/1687755823165218215/c1705416_716974.png)
-
-
-
-## 交流群🚀
-
-> **关注「有来技术」公众号，获取交流群二维码。**
->
-> 如果交流群的二维码过期，请加微信(haoxianrui)并备注「前端」、「后端」或「全栈」以获取最新二维码。
->
-> 为确保交流群质量，防止营销广告人群混入，我们采取了此措施。望各位理解！
-
-| 公众号 | 交流群 |
-|:----:|:----:|
-| ![有来技术公众号二维码](https://foruda.gitee.com/images/1687689212187063809/3c69eaee_716974.png) | ![交流群二维码](https://foruda.gitee.com/images/1687689212139273561/6a65ef69_716974.png) |
-

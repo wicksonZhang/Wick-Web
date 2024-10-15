@@ -17,7 +17,6 @@
 
 <script setup lang="ts">
 
-import DictAPI from "@/api/system/dict-type";
 import DictDataAPI from "@/api/system/dict-data";
 
 const props = defineProps({
