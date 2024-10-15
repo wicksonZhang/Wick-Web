@@ -5,7 +5,7 @@
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="关键字" prop="keywords">
           <el-input
-            v-model="queryParams.keywords"
+            v-model="queryParams.name"
             placeholder="字典标签/字典值"
             clearable
             @keyup.enter="handleQuery"
@@ -142,7 +142,7 @@
               :type="formData.tagType"
               class="mr-2"
             >
-              {{ formData.label }}
+              {{ formData.tagType }}
             </el-tag>
             <el-radio-group v-model="formData.tagType">
               <el-radio value="success" border size="small">success</el-radio>
@@ -177,7 +177,7 @@ import DictDataAPI, {DictDataForm, DictDataPageVO} from "@/api/system/dict-data"
 
 const route = useRoute();
 
-const code = ref(route.query.code as string);
+const dictCode = ref(route.query.code as string);
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
@@ -189,7 +189,8 @@ const total = ref(0);
 const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
-  code: code.value,
+  code: dictCode.value,
+  name: undefined,
 });
 
 const tableData = ref<DictDataPageVO[]>();
@@ -206,14 +207,14 @@ watch(
   () => [route.query.code],
   ([newDictCode]) => {
     queryParams.code = newDictCode as string;
-    code.value = newDictCode as string;
+    dictCode.value = newDictCode as string;
     handleQuery();
   }
 );
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     value: [{ required: true, message: "请输入字典值", trigger: "blur" }],
-    label: [{ required: true, message: "请输入字典标签", trigger: "blur" }],
+    name: [{ required: true, message: "请输入字典标签", trigger: "blur" }],
   };
   return rules;
 });
@@ -234,7 +235,7 @@ function handleQuery() {
 // 重置查询
 function handleResetQuery() {
   queryFormRef.value.resetFields();
-  queryParams.pageNum = 1;
+  queryParams.pageNumber = 1;
   handleQuery();
 }
 
@@ -261,7 +262,7 @@ function handleSubmitClick() {
     if (isValid) {
       loading.value = true;
       const id = formData.id;
-      formData.dictCode = code.value;
+      // formData.code = dictCode.value;
       if (id) {
         DictDataAPI.update(id, formData)
           .then(() => {
