@@ -139,7 +139,7 @@
 </template>
 
 <script lang="ts" setup>
-import DictAPI from "@/api/system/dict";
+import DictAPI from "@/api/system/dict-type";
 import {CodeGenColumnsInfoVO} from "@/api/tool/code-gen";
 import {PropType} from "vue";
 

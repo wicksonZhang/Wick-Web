@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const BASE_URL = "/api/v1/system/dict/data";
+const BASE_URL = "/api/v1/system/dict-data";
 
 const DictDataAPI = {
 

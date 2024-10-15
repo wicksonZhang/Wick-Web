@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const BASE_URL = "/api/v1/system/dict/types";
+const BASE_URL = "/api/v1/system/dict-type";
 
 class DictAPI {
   /**
@@ -106,34 +106,6 @@ export interface DictPageVO {
    */
   status: number;
 }
-
-/**
- * 字典项
- */
-export interface DictItem {
-  /**
-   * 字典项ID
-   */
-  id?: number;
-  /**
-   * 字典项名称
-   */
-  name?: string;
-  /**
-   * 字典项值
-   */
-  value?: string;
-  /**
-   * 排序
-   */
-  sort?: number;
-  /**
-   * 状态（1-启用，0-禁用）
-   */
-  status?: number;
-}
-
-// TypeScript 类型声明
 
 /**
  * 字典

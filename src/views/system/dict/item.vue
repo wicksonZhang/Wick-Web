@@ -56,10 +56,10 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="字典标签" prop="label" />
-        <el-table-column label="字典值" prop="value" />
-        <el-table-column label="排序" prop="sort" />
-        <el-table-column label="状态">
+        <el-table-column label="字典标签" prop="name" align="center"/>
+        <el-table-column label="字典值" prop="value" align="center"/>
+        <el-table-column label="排序" prop="sort" align="center"/>
+        <el-table-column label="状态" align="center">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
               {{ scope.row.status === 1 ? "启用" : "禁用" }}
@@ -98,7 +98,7 @@
       <pagination
         v-if="total > 0"
         v-model:total="total"
-        v-model:page="queryParams.pageNum"
+        v-model:page="queryParams.pageNumber"
         v-model:limit="queryParams.pageSize"
         @pagination="handleQuery"
       />
@@ -119,7 +119,7 @@
       >
         <el-card shadow="never">
           <el-form-item label="字典标签" prop="label">
-            <el-input v-model="formData.label" placeholder="请输入字典标签" />
+            <el-input v-model="formData.name" placeholder="请输入字典标签" />
           </el-form-item>
           <el-form-item label="字典值" prop="value">
             <el-input v-model="formData.value" placeholder="请输入字典值" />
@@ -177,7 +177,7 @@ import DictDataAPI, {DictDataForm, DictDataPageVO} from "@/api/system/dict-data"
 
 const route = useRoute();
 
-const dictCode = ref(route.query.dictCode as string);
+const code = ref(route.query.code as string);
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
@@ -187,9 +187,9 @@ const ids = ref<number[]>([]);
 const total = ref(0);
 
 const queryParams = reactive({
-  pageNum: 1,
+  pageNumber: 1,
   pageSize: 10,
-  dictCode: dictCode.value,
+  code: code.value,
 });
 
 const tableData = ref<DictDataPageVO[]>();
@@ -203,10 +203,10 @@ const formData = reactive<DictDataForm>({});
 
 // 监听路由参数变化，更新字典数据
 watch(
-  () => [route.query.dictCode],
+  () => [route.query.code],
   ([newDictCode]) => {
-    queryParams.dictCode = newDictCode as string;
-    dictCode.value = newDictCode as string;
+    queryParams.code = newDictCode as string;
+    code.value = newDictCode as string;
     handleQuery();
   }
 );
@@ -261,7 +261,7 @@ function handleSubmitClick() {
     if (isValid) {
       loading.value = true;
       const id = formData.id;
-      formData.dictCode = dictCode.value;
+      formData.dictCode = code.value;
       if (id) {
         DictDataAPI.update(id, formData)
           .then(() => {

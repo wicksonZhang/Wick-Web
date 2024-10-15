@@ -13,7 +13,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
-            v-hasPerm="['system:dict_type:query']"
+            v-hasPerm="['system:dict-type:query']"
             type="primary"
             @click="handleQuery()"
           >
@@ -23,7 +23,7 @@
             搜索
           </el-button>
           <el-button
-            v-hasPerm="['system:dict_type:query']"
+            v-hasPerm="['system:dict-type:query']"
             @click="handleReset()"
           >
             <template #icon>
@@ -38,7 +38,7 @@
     <el-card shadow="never">
       <div class="mb-[10px]">
         <el-button
-          v-hasPerm="['system:dict_type:add']"
+          v-hasPerm="['system:dict-type:add']"
           type="success"
           @click="handleAddClick()"
         >
@@ -48,7 +48,7 @@
           新增
         </el-button>
         <el-button
-          v-hasPerm="['system:dict_type:delete']"
+          v-hasPerm="['system:dict-type:delete']"
           type="danger"
           :disabled="ids.length === 0"
           @click="handleDelete()"
@@ -71,8 +71,11 @@
         <el-table-column label="字典名称" prop="name" align="center"/>
         <el-table-column label="字典编码" prop="code" align="center" :show-overflow-tooltip="true">
           <template #default="scope">
-            <router-link :to="'/system/dict-data/' + scope.row.id" class="link-type">
-              <span>{{ scope.row.code }}</span>
+            <router-link
+              :to="{ path: '/system/dict-data', query: { code: scope.row.code , title: '【'+ scope.row.name + '】字典数据'} }"
+              class="link-type"
+            >
+              {{ scope.row.code }}
             </router-link>
           </template>
         </el-table-column>
@@ -86,7 +89,7 @@
         <el-table-column fixed="right" label="操作" align="center" width="220">
           <template #default="scope">
             <el-button
-              v-hasPerm="['system:dict_type:update']"
+              v-hasPerm="['system:dict-type:update']"
               type="primary"
               link
               size="small"
@@ -98,7 +101,7 @@
               编辑
             </el-button>
             <el-button
-              v-hasPerm="['system:dict_type:delete']"
+              v-hasPerm="['system:dict-type:delete']"
               type="danger"
               link
               size="small"
@@ -160,7 +163,8 @@
 </template>
 
 <script setup lang="ts">
-import DictAPI, {DictForm, DictPageVO} from "@/api/system/dict";
+import DictAPI, {DictForm, DictPageVO} from "@/api/system/dict-type";
+import router from "@/router";
 
 defineOptions({
   name: "Dict",
@@ -189,7 +193,6 @@ const dialog = reactive({
 });
 
 const formData = reactive<DictForm>({});
-
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     name: [{required: true, message: "请输入字典名称", trigger: "blur"}],
