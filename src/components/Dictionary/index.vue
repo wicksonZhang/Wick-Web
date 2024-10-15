@@ -18,6 +18,7 @@
 <script setup lang="ts">
 
 import DictAPI from "@/api/system/dict-type";
+import DictDataAPI from "@/api/system/dict-data";
 
 const props = defineProps({
   /**
@@ -70,7 +71,7 @@ function handleChange(val?: string | number | undefined) {
 
 onBeforeMount(() => {
   // 根据字典编码获取字典项
-  DictAPI.getOptions(props.code).then((data) => {
+  DictDataAPI.getOptions(props.code).then((data) => {
     options.value = data;
   });
 });

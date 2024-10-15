@@ -177,7 +177,7 @@ import DictDataAPI, {DictDataForm, DictDataPageVO} from "@/api/system/dict-data"
 
 const route = useRoute();
 
-const code = ref(route.query.code as string);
+const dictCode = ref(route.query.code as string);
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
@@ -189,7 +189,7 @@ const total = ref(0);
 const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
-  code: code.value,
+  code: dictCode.value,
   name: undefined,
 });
 
@@ -207,7 +207,7 @@ watch(
   () => [route.query.code],
   ([newDictCode]) => {
     queryParams.code = newDictCode as string;
-    code.value = newDictCode as string;
+    dictCode.value = newDictCode as string;
     handleQuery();
   }
 );
@@ -262,7 +262,7 @@ function handleSubmitClick() {
     if (isValid) {
       loading.value = true;
       const id = formData.id;
-      formData.code = code.value;
+      // formData.code = dictCode.value;
       if (id) {
         DictDataAPI.update(id, formData)
           .then(() => {
