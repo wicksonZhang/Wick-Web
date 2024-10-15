@@ -123,6 +123,7 @@ export interface DictDataForm {
    * 字典ID
    */
   id?: number;
+  code: string;
   /**
    * 字典数据值
    */
