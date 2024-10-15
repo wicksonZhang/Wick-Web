@@ -98,17 +98,13 @@ export interface DictDataPageVO {
    */
   id: number;
   /**
-   * 字典编码
-   */
-  dictCode: string;
-  /**
    * 字典数据值
    */
   value: string;
   /**
    * 字典数据标签
    */
-  label: string;
+  name: string;
   /**
    * 状态（1:启用，0:禁用)
    */
@@ -128,17 +124,13 @@ export interface DictDataForm {
    */
   id?: number;
   /**
-   * 字典编码
-   */
-  dictCode?: string;
-  /**
    * 字典数据值
    */
   value?: string;
   /**
    * 字典数据标签
    */
-  label?: string;
+  name?: string;
   /**
    * 状态（1:启用，0:禁用)
    */

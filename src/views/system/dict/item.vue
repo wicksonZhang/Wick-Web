@@ -5,7 +5,7 @@
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="关键字" prop="keywords">
           <el-input
-            v-model="queryParams.keywords"
+            v-model="queryParams.name"
             placeholder="字典标签/字典值"
             clearable
             @keyup.enter="handleQuery"
@@ -190,6 +190,7 @@ const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
   code: code.value,
+  name: undefined,
 });
 
 const tableData = ref<DictDataPageVO[]>();
