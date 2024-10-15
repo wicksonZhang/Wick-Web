@@ -142,7 +142,7 @@
               :type="formData.tagType"
               class="mr-2"
             >
-              {{ formData.label }}
+              {{ formData.tagType }}
             </el-tag>
             <el-radio-group v-model="formData.tagType">
               <el-radio value="success" border size="small">success</el-radio>
@@ -214,7 +214,7 @@ watch(
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     value: [{ required: true, message: "请输入字典值", trigger: "blur" }],
-    label: [{ required: true, message: "请输入字典标签", trigger: "blur" }],
+    name: [{ required: true, message: "请输入字典标签", trigger: "blur" }],
   };
   return rules;
 });
