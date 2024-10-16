@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-
 import DictDataAPI from "@/api/system/dict-data";
 
 const props = defineProps({
