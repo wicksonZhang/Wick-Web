@@ -141,4 +141,8 @@ export interface DictDataForm {
    * 字典排序
    */
   sort?: number;
+  /**
+   * 备注
+   */
+  remark?: string;
 }
