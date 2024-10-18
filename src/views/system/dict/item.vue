@@ -1,26 +1,31 @@
 <!-- 字典数据 -->
 <template>
   <div class="app-container">
-    <div class="search-container mt-5">
+    <div class="search-container">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="关键字" prop="keywords">
+        <el-form-item label="字典标签" prop="name">
           <el-input
             v-model="queryParams.name"
-            placeholder="字典标签/字典值"
+            placeholder="字典标签"
             clearable
             @keyup.enter="handleQuery"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery()">
+          <el-button
+            v-hasPerm="['system:dict-data:query']"
+            type="primary"
+            @click="handleQuery()">
             <template #icon>
-              <Search />
+              <Search/>
             </template>
             搜索
           </el-button>
-          <el-button @click="handleResetQuery()">
+          <el-button
+            v-hasPerm="['system:dict-data:query']"
+            @click="handleResetQuery()">
             <template #icon>
-              <Refresh />
+              <Refresh/>
             </template>
             重置
           </el-button>
@@ -30,19 +35,23 @@
 
     <el-card shadow="never">
       <div class="mb-[10px]">
-        <el-button type="success" @click="handleOpenDialog()">
+        <el-button
+          v-hasPerm="['system:dict-data:add']"
+          type="success"
+          @click="handleOpenDialog()">
           <template #icon>
-            <Plus />
+            <Plus/>
           </template>
           新增
         </el-button>
         <el-button
+          v-hasPerm="['system:dict-data:delete']"
           type="danger"
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
           <template #icon>
-            <Delete />
+            <Delete/>
           </template>
           删除
         </el-button>
@@ -55,7 +64,7 @@
         border
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column type="selection" width="55" align="center"/>
         <el-table-column label="字典标签" prop="name" align="center"/>
         <el-table-column label="字典值" prop="value" align="center"/>
         <el-table-column label="排序" prop="sort" align="center"/>
@@ -70,24 +79,26 @@
         <el-table-column fixed="right" label="操作" align="center" width="220">
           <template #default="scope">
             <el-button
+              v-hasPerm="['system:dict-data:update']"
               type="primary"
               link
               size="small"
               @click.stop="handleOpenDialog(scope.row)"
             >
               <template #icon>
-                <Edit />
+                <Edit/>
               </template>
               编辑
             </el-button>
             <el-button
+              v-hasPerm="['system:dict-data:delete']"
               type="danger"
               link
               size="small"
               @click.stop="handleDelete(scope.row.id)"
             >
               <template #icon>
-                <Delete />
+                <Delete/>
               </template>
               删除
             </el-button>
@@ -108,7 +119,6 @@
     <el-dialog
       v-model="dialog.visible"
       :title="dialog.title"
-      width="820px"
       @close="handleCloseDialog"
     >
       <el-form
@@ -117,43 +127,27 @@
         :rules="computedRules"
         label-width="100px"
       >
-        <el-card shadow="never">
-          <el-form-item label="字典标签" prop="label">
-            <el-input v-model="formData.name" placeholder="请输入字典标签" />
-          </el-form-item>
-          <el-form-item label="字典值" prop="value">
-            <el-input v-model="formData.value" placeholder="请输入字典值" />
-          </el-form-item>
-          <el-form-item label="状态">
-            <el-radio-group v-model="formData.status">
-              <el-radio :value="1">启用</el-radio>
-              <el-radio :value="0">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="排序">
-            <el-input-number
-              v-model="formData.sort"
-              controls-position="right"
-            />
-          </el-form-item>
-          <el-form-item label="标签类型">
-            <el-tag
-              v-if="formData.tagType"
-              :type="formData.tagType"
-              class="mr-2"
-            >
-              {{ formData.tagType }}
-            </el-tag>
-            <el-radio-group v-model="formData.tagType">
-              <el-radio value="success" border size="small">success</el-radio>
-              <el-radio value="warning" border size="small">warning</el-radio>
-              <el-radio value="info" border size="small">info</el-radio>
-              <el-radio value="primary" border size="small">primary</el-radio>
-              <el-radio value="danger" border size="small">danger</el-radio>
-              <el-radio value="" border size="small">清空</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-card>
+        <el-form-item label="字典标签" prop="name">
+          <el-input v-model="formData.name" placeholder="请输入字典标签"/>
+        </el-form-item>
+        <el-form-item label="字典值" prop="value">
+          <el-input v-model="formData.value" placeholder="请输入字典值"/>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-radio-group v-model="formData.status">
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input-number
+            v-model="formData.sort"
+            controls-position="right"
+          />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input type="textarea" v-model="formData.remark" placeholder="请输入备注"/>
+        </el-form-item>
       </el-form>
 
       <template #footer>
@@ -200,7 +194,9 @@ const dialog = reactive({
   visible: false,
 });
 
-const formData = reactive<DictDataForm>({});
+const formData = reactive<DictDataForm>({
+  status: 1
+});
 
 // 监听路由参数变化，更新字典数据
 watch(
@@ -213,8 +209,8 @@ watch(
 );
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
-    value: [{ required: true, message: "请输入字典值", trigger: "blur" }],
-    name: [{ required: true, message: "请输入字典标签", trigger: "blur" }],
+    value: [{required: true, message: "请输入字典值", trigger: "blur"}],
+    name: [{required: true, message: "请输入字典标签", trigger: "blur"}],
   };
   return rules;
 });
@@ -262,7 +258,7 @@ function handleSubmitClick() {
     if (isValid) {
       loading.value = true;
       const id = formData.id;
-      // formData.code = dictCode.value;
+      formData.code = dictCode.value;
       if (id) {
         DictDataAPI.update(id, formData)
           .then(() => {
@@ -295,6 +291,7 @@ function handleCloseDialog() {
   formData.sort = 1;
   formData.status = 1;
 }
+
 /**
  * 删除字典
  *

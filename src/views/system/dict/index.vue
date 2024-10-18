@@ -70,14 +70,6 @@
         <el-table-column type="selection" width="55" align="center"/>
         <el-table-column label="字典名称" prop="name" align="center"/>
         <el-table-column label="字典编码" prop="code" align="center" :show-overflow-tooltip="true">
-          <template #default="scope">
-            <router-link
-              :to="{ path: '/system/dict-data', query: { code: scope.row.code , title: '【'+ scope.row.name + '】字典数据'} }"
-              class="link-type"
-            >
-              {{ scope.row.code }}
-            </router-link>
-          </template>
         </el-table-column>
         <el-table-column label="状态" prop="status" align="center">
           <template #default="scope">
@@ -88,6 +80,18 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center" width="220">
           <template #default="scope">
+            <el-button
+              v-hasPerm="['system:dict-data:query']"
+              type="primary"
+              link
+              size="small"
+              @click.stop="handleOpenDictData(scope.row)"
+            >
+              <template #icon>
+                <Collection />
+              </template>
+              字典数据
+            </el-button>
             <el-button
               v-hasPerm="['system:dict-type:update']"
               type="primary"
@@ -193,6 +197,7 @@ const dialog = reactive({
 });
 
 const formData = reactive<DictForm>({});
+
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     name: [{required: true, message: "请输入字典名称", trigger: "blur"}],
@@ -309,6 +314,14 @@ function handleDelete(id?: number) {
       ElMessage.info("已取消删除");
     }
   );
+}
+
+// 打开字典数据
+function handleOpenDictData(row: DictPageVO) {
+  router.push({
+    path: "/system/dict-data",
+    query: { code: row.code, title: "字典数据" },
+  });
 }
 
 onMounted(() => {
