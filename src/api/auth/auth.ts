@@ -2,9 +2,9 @@ import request from "@/utils/request";
 
 const AUTH_BASE_URL = "/api/v1/auth";
 
-class AuthAPI {
-  /** 登录 接口*/
-  static login(data: LoginData) {
+const AuthAPI = {
+  /** 登录接口*/
+  login(data: LoginFormData) {
     const formData = new FormData();
     formData.append("username", data.username);
     formData.append("password", data.password);
@@ -18,29 +18,41 @@ class AuthAPI {
         "Content-Type": "multipart/form-data",
       },
     });
-  }
+  },
 
-  /** 注销 接口*/
-  static logout() {
+  /** 刷新 token 接口*/
+  refreshToken(refreshToken: string) {
+    return request<any, LoginResult>({
+      url: `${AUTH_BASE_URL}/refresh-token`,
+      method: "post",
+      params: { refreshToken: refreshToken },
+      headers: {
+        Authorization: "no-auth",
+      },
+    });
+  },
+
+  /** 注销登录接口 */
+  logout() {
     return request({
       url: `${AUTH_BASE_URL}/logout`,
       method: "delete",
     });
-  }
+  },
 
-  /** 获取验证码 接口*/
-  static getCaptcha() {
-    return request<any, CaptchaResult>({
+  /** 获取验证码接口*/
+  getCaptcha() {
+    return request<any, CaptchaInfo>({
       url: `${AUTH_BASE_URL}/captcha`,
       method: "get",
     });
-  }
-}
+  },
+};
 
 export default AuthAPI;
 
-/** 登录请求参数 */
-export interface LoginData {
+/** 登录表单数据 */
+export interface LoginFormData {
   /** 用户名 */
   username: string;
   /** 密码 */
@@ -53,18 +65,18 @@ export interface LoginData {
 
 /** 登录响应 */
 export interface LoginResult {
-  /** 访问token */
-  accessToken?: string;
-  /** 过期时间(单位：毫秒) */
-  expires?: number;
-  /** 刷新token */
-  refreshToken?: string;
-  /** token 类型 */
-  tokenType?: string;
+  /** 访问令牌 */
+  accessToken: string;
+  /** 刷新令牌 */
+  refreshToken: string;
+  /** 令牌类型 */
+  tokenType: string;
+  /** 过期时间(秒) */
+  expiresIn: number;
 }
 
-/** 验证码响应 */
-export interface CaptchaResult {
+/** 验证码信息 */
+export interface CaptchaInfo {
   /** 验证码缓存key */
   captchaKey: string;
   /** 验证码图片Base64字符串 */

@@ -1,82 +1,101 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { type InternalAxiosRequestConfig, type AxiosResponse } from "axios";
+import qs from "qs";
 import { useUserStoreHook } from "@/store/modules/user";
 import { ResultEnum } from "@/enums/ResultEnum";
-import { TOKEN_KEY } from "@/enums/CacheEnum";
-import qs from "qs";
+import { getAccessToken } from "@/utils/auth";
+import router from "@/router";
 
 // 创建 axios 实例
 const service = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
   timeout: 50000,
   headers: { "Content-Type": "application/json;charset=utf-8" },
-
-  paramsSerializer: (params) => {
-    return qs.stringify(params);
-  },
+  paramsSerializer: (params) => qs.stringify(params),
 });
 
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const accessToken = localStorage.getItem(TOKEN_KEY);
-    if (accessToken) {
-      config.headers.Authorization = accessToken;
+    const accessToken = getAccessToken();
+    // 如果 Authorization 设置为 no-auth，则不携带 Token，用于登录、刷新 Token 等接口
+    if (config.headers.Authorization !== "no-auth" && accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    } else {
+      delete config.headers.Authorization;
     }
     return config;
   },
-  (error: any) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    // 检查配置的响应类型是否为二进制类型（'blob' 或 'arraybuffer'）, 如果是，直接返回响应对象
-    if (
-      response.config.responseType === "blob" ||
-      response.config.responseType === "arraybuffer"
-    ) {
+    // 如果响应是二进制流，则直接返回，用于下载文件、Excel 导出等
+    if (response.config.responseType === "blob") {
       return response;
     }
 
-    // 获取 状态码、数据、消息
     const { code, data, msg } = response.data;
     if (code === ResultEnum.SUCCESS) {
       return data;
     }
 
-    // 如果 code === 401 说明token已过期
-    if (code === ResultEnum.TOKEN_INVALID) {
-      ElNotification({
-        title: "提示",
-        message: "您的会话已过期，请重新登录",
-        type: "info",
-      });
-      useUserStoreHook()
-        .resetToken()
-        .then(() => {
-          location.reload();
-        });
+    // Token 过期，刷新 Token
+    if (code === ResultEnum.ACCESS_TOKEN_INVALID) {
+      return handleTokenRefresh(response.config);
     } else {
       ElMessage.error(msg || "系统出错");
     }
     return Promise.reject(new Error(msg || "Error"));
-  },
-  (error: any) => {
-    console.log("err" + error);
-    let { message } = error;
-    if (message == "Network Error") {
-      message = "后端接口连接异常";
-    } else if (message.includes("timeout")) {
-      message = "系统接口请求超时";
-    } else if (message.includes("Request failed with status code")) {
-      message = "系统接口" + message.substr(message.length - 3) + "异常";
-    }
-    ElMessage({ message: message, type: "error", duration: 5 * 1000 });
-    return Promise.reject(error);
-  }
-);
+  });
 
-// 导出 axios 实例
 export default service;
+
+// 是否正在刷新标识，避免重复刷新
+let isRefreshing = false;
+// 因 Token 过期导致的请求等待队列
+const waitingQueue: Array<() => void> = [];
+
+// 刷新 Token 处理
+async function handleTokenRefresh(config: InternalAxiosRequestConfig) {
+  return new Promise((resolve) => {
+    // 封装需要重试的请求
+    const retryRequest = () => {
+      config.headers.Authorization = getAccessToken();
+      resolve(service(config));
+    };
+
+    waitingQueue.push(retryRequest);
+
+    if (!isRefreshing) {
+      isRefreshing = true;
+
+      // 刷新 Token
+      useUserStoreHook()
+        .refreshToken()
+        .then(() => {
+          // 依次重试队列中所有请求, 重试后清空队列
+          waitingQueue.forEach((callback) => callback());
+          waitingQueue.length = 0;
+        })
+        .catch((error: any) => {
+          console.log("handleTokenRefresh error", error);
+          // 刷新 Token 失败，跳转登录页
+          ElNotification({
+            title: "提示",
+            message: "您的会话已过期，请重新登录",
+            type: "info",
+          });
+          useUserStoreHook()
+            .clearUserData()
+            .then(() => {
+              router.push("/login");
+            });
+        })
+        .finally(() => {
+          isRefreshing = false;
+        });
+    }
+  });
+}

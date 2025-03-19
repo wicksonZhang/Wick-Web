@@ -4,18 +4,13 @@
     <el-row :gutter="20">
       <!-- 部门树 -->
       <el-col :lg="4" :xs="24" class="mb-[12px]">
-        <dept-tree v-model="queryParams.deptId" @node-click="handleQuery" />
+        <DeptTree v-model="queryParams.deptId" @node-click="handleQuery" />
       </el-col>
 
       <!-- 用户列表 -->
       <el-col :lg="20" :xs="24">
-        <div class="search-container">
-          <el-form
-            ref="queryFormRef"
-            :model="queryParams"
-            :inline="true"
-            label-width="68px"
-          >
+        <div class="search-bar">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="用户名" prop="username">
               <el-input
                 v-model="queryParams.username"
@@ -35,17 +30,8 @@
               />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="queryParams.status"
-                placeholder="全部"
-                clearable
-                class="!w-256px"
-              >
-                <el-option label="正常" :value="1" />
-                <el-option label="禁用" :value="0" />
-              </el-select>
+              <Dict  v-model="queryParams.status" code="status" class="!w-240px"/>
             </el-form-item>
-
             <el-form-item label="创建时间" prop="createTime">
               <el-date-picker
                 v-model="queryParams.createTime"
@@ -57,22 +43,12 @@
                 class="!w-256px"
               />
             </el-form-item>
-
             <el-form-item>
-              <el-button
-                v-hasPerm="['system:user:query']"
-                type="primary"
-                @click="handleQuery"
-              >
-                <template #icon><Search /></template>
-                搜索
+              <el-button v-hasPerm="['system:user:query']" type="primary" @click="handleQuery">
+                <template #icon><Search /></template>搜索
               </el-button>
-              <el-button
-                v-hasPerm="['system:user:query']"
-                @click="handleResetQuery"
-              >
-                <template #icon><Refresh /></template>
-                重置
+              <el-button v-hasPerm="['system:user:query']" @click="handleResetQuery">
+                <template #icon><Refresh /></template>重置
               </el-button>
             </el-form-item>
           </el-form>
@@ -82,22 +58,13 @@
           <template #header>
             <div class="flex-x-between">
               <div>
-                <el-button
-                  v-hasPerm="['system:user:add']"
-                  type="success"
-                  @click="handleOpenDialog()"
-                >
+                <el-button v-hasPerm="['system:user:add']" type="success" @click="handleOpenDialog()">
                   <el-icon>
                     <Plus />
                   </el-icon>
                   新增
                 </el-button>
-                <el-button
-                  v-hasPerm="['system:user:delete']"
-                  type="danger"
-                  :disabled="removeIds.length === 0"
-                  @click="handleDelete()"
-                >
+                <el-button v-hasPerm="['system:user:delete']" type="danger" :disabled="removeIds.length === 0" @click="handleDelete()">
                   <el-icon>
                     <Delete />
                   </el-icon>
@@ -105,20 +72,12 @@
                 </el-button>
               </div>
               <div>
-                <el-button
-                  v-hasPerm="['system:user:import']"
-                  class="ml-3"
-                  @click="handleOpenImportDialog"
-                >
+                <el-button v-hasPerm="['system:user:import']" class="ml-3" @click="handleOpenImportDialog">
                   <template #icon><Upload /></template>
                   导入
                 </el-button>
 
-                <el-button
-                  v-hasPerm="['system:user:export']"
-                  class="ml-3"
-                  @click="handleExport"
-                >
+                <el-button v-hasPerm="['system:user:export']" class="ml-3" @click="handleExport">
                   <template #icon><Download /></template>
                   导出
                 </el-button>
@@ -126,94 +85,35 @@
             </div>
           </template>
 
-          <el-table
-            v-loading="loading"
-            :data="pageData"
-            @selection-change="handleSelectionChange"
-          >
+          <el-table v-loading="loading" :data="pageData" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="50" align="center" />
-            <el-table-column
-              key="id"
-              label="编号"
-              align="center"
-              prop="id"
-              width="80"
-            />
-            <el-table-column
-              key="username"
-              label="用户名"
-              align="center"
-              prop="username"
-            />
+            <el-table-column key="id" label="编号" align="center" prop="id" width="80"/>
+            <el-table-column key="username" label="用户名" align="center" prop="username"/>
             <el-table-column label="用户昵称" align="center" prop="nickname" />
-
-            <el-table-column
-              label="性别"
-              width="100"
-              align="center"
-              prop="genderLabel"
-            />
-
-            <el-table-column
-              label="部门"
-              width="150"
-              align="center"
-              prop="deptName"
-            />
-            <el-table-column
-              label="手机号码"
-              align="center"
-              prop="mobile"
-              width="120"
-            />
-
-            <el-table-column
-              label="状态"
-              align="center"
-              prop="status"
-              width="100"
-            >
+            <el-table-column label="性别" width="100" align="center" prop="gender">
               <template #default="scope">
-                <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-                  {{ scope.row.status === 1 ? "正常" : "禁用" }}
-                </el-tag>
+                <DictLabel v-model="scope.row.gender" code="gender"/>
               </template>
             </el-table-column>
-            <el-table-column
-              label="创建时间"
-              align="center"
-              prop="createTime"
-              width="180"
-            />
+            <el-table-column label="部门" width="150" align="center" prop="deptName"/>
+            <el-table-column label="手机号码" align="center" prop="mobile" width="120"/>
+            <el-table-column label="状态" align="center" prop="status" width="100">
+              <template #default="scope">
+                <DictLabel v-model="scope.row.status" code="status"/>
+              </template>
+            </el-table-column>
+            <el-table-column label="创建时间" align="center" prop="createTime" width="180"/>
             <el-table-column label="操作" fixed="right" width="220">
               <template #default="scope">
-                <el-button
-                  v-hasPerm="['system:user:reset_pwd']"
-                  type="primary"
-                  size="small"
-                  link
-                  @click="hancleResetPassword(scope.row)"
-                >
+                <el-button v-hasPerm="['system:user:reset_pwd']" type="primary" size="small" link @click="hancleResetPassword(scope.row)">
                   <template #icon><RefreshLeft /></template>
                   重置密码
                 </el-button>
-                <el-button
-                  v-hasPerm="['system:user:update']"
-                  type="primary"
-                  link
-                  size="small"
-                  @click="handleOpenDialog(scope.row.id)"
-                >
+                <el-button v-hasPerm="['system:user:update']" type="primary" link size="small" @click="handleOpenDialog(scope.row.id)">
                   <template #icon><Edit /></template>
                   编辑
                 </el-button>
-                <el-button
-                  v-hasPerm="['system:user:delete']"
-                  type="danger"
-                  link
-                  size="small"
-                  @click="handleDelete(scope.row.id)"
-                >
+                <el-button v-hasPerm="['system:user:delete']" type="danger" link size="small" @click="handleDelete(scope.row.id)">
                   <template #icon><Delete /></template>
                   删除
                 </el-button>
@@ -233,18 +133,8 @@
     </el-row>
 
     <!-- 用户表单弹窗 -->
-    <el-dialog
-      v-model="dialog.visible"
-      :title="dialog.title"
-      append-to-body
-      @close="handleCloseDialog"
-    >
-      <el-form
-        ref="userFormRef"
-        :model="formData"
-        :rules="rules"
-        label-width="80px"
-      >
+    <el-dialog v-model="dialog.visible" :title="dialog.title" append-to-body @close="handleCloseDialog">
+      <el-form ref="userFormRef" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="username">
           <el-input
             v-model="formData.username"
@@ -269,7 +159,7 @@
         </el-form-item>
 
         <el-form-item label="性别" prop="gender">
-          <dictionary v-model="formData.gender" code="gender" />
+          <Dict v-model="formData.gender" code="gender"/>
         </el-form-item>
 
         <el-form-item label="角色" prop="roleIds">
@@ -323,10 +213,7 @@
     </el-dialog>
 
     <!-- 用户导入弹窗 -->
-    <user-import
-      v-model:visible="importDialogVisible"
-      @import-success="handleOpenImportDialogSuccess"
-    />
+    <user-import v-model:visible="importDialogVisible" @import-success="handleOpenImportDialogSuccess"/>
   </div>
 </template>
 
@@ -340,6 +227,8 @@ defineOptions({
 
 import UserAPI, { UserForm, UserPageVO } from "@/api/system/user";
 import DeptAPI from "@/api/system/dept";
+import DictLabel from "@/components/Dict/DictLabel.vue";
+import DeptTree from "@/views/system/user/components/DeptTree.vue";
 
 const queryFormRef = ref(ElForm);
 const userFormRef = ref(ElForm);
@@ -442,7 +331,7 @@ function hancleResetPassword(row: { [key: string]: any }) {
         ElMessage.warning("密码至少需要6位字符，请重新输入");
         return false;
       }
-      UserAPI.updatePassword(row.id, value).then(() => {
+      UserAPI.resetPassword(row.id, value).then(() => {
         ElMessage.success("密码重置成功，新密码是：" + value);
       });
     },

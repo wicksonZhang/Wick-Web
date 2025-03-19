@@ -18,7 +18,7 @@
       <el-divider content-position="left">
         <strong style="font-size: 15px">生成信息</strong>
       </el-divider>
-      <generate-info-form ref="generateInfoRef" :columns="formData.columns" :table="formData.table"/>
+      <generate-info-form ref="generateInfoRef" :table="formData.table"/>
 
       <!-- 列信息部分 -->
       <el-divider content-position="left">
@@ -108,6 +108,7 @@ async function submitForm() {
     loading.value = true; // 开启加载状态
     await GeneratorAPI.updateToolCodeGenTable(unref(formData)); // 提交表单数据
     ElMessage.success('操作成功'); // 成功提示
+    emit("success");
     closeDrawer(); // 关闭抽屉
   } catch (error) {
     ElMessage.error('提交失败，请重试'); // 错误提示
@@ -136,6 +137,8 @@ async function validateForms(): Promise<boolean> {
 function closeDrawer() {
   dialogVisible.value = false;
 }
+
+const emit = defineEmits(["success"]);
 </script>
 
 <style scoped>

@@ -154,7 +154,7 @@
 <script lang="ts" setup>
 import MenuAPI from "@/api/system/menu";
 import { PropType } from "vue";
-import { CodeGenColumnsInfoVO, CodeGenTableInfoVO } from "@/api/tool/code-gen";
+import { CodeGenTableInfoVO } from "@/api/tool/code-gen";
 
 // 定义组件名称
 defineOptions({ name: 'CodegenGenerateInfoForm' });
@@ -163,10 +163,6 @@ defineOptions({ name: 'CodegenGenerateInfoForm' });
 const props = defineProps({
   table: {
     type: Object as PropType<CodeGenTableInfoVO>,
-    default: () => null
-  },
-  columns: {
-    type: Array as unknown as PropType<CodeGenColumnsInfoVO[]>,
     default: () => null
   }
 });
@@ -189,7 +185,7 @@ const rules = ref({
 
 // 菜单选项列表，用于上级菜单的下拉选择
 const menuOptions = ref<OptionType[]>([]);
-function getMenuTreeSelect() {
+async function getMenuTreeSelect() {
   MenuAPI.getOptions(true).then((data) => {
     menuOptions.value = data;
   });

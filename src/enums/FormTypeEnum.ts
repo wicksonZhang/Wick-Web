@@ -9,6 +9,7 @@ export const FormTypeEnum: Record<string, OptionType> = {
   INPUT_NUMBER: { value: 5, label: "数字输入框" },
   SWITCH: { value: 6, label: "开关" },
   TEXT_AREA: { value: 7, label: "文本域" },
-  DATE_TIME: { value: 8, label: "日期时间框" },
-  DATE: { value: 9, label: "日期框" },
+  DATE: { value: 8, label: "日期框" },
+  DATE_TIME: { value: 9, label: "日期时间框" },
+  HIDDEN: { value: 10, label: "隐藏域" },
 };

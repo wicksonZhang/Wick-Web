@@ -1,5 +1,5 @@
 export default {
-  // 路由国际化
+  // 菜单国际化
   route: {
     dashboard: "Dashboard",
     document: "Document",
@@ -56,8 +56,10 @@ export default {
     navigation: "Navigation",
     themeColor: "Theme Color",
     tagsView: "Tags View",
-    fixedHeader: "Fixed Header",
     sidebarLogo: "Sidebar Logo",
+    sidebarColorScheme: "Sidebar Color Scheme",
     watermark: "Watermark",
+    classicBlue: "Classic Blue",
+    minimalWhite: "Minimal White",
   },
 };

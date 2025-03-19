@@ -1,11 +1,11 @@
 <!-- 字典数据 -->
 <template>
   <div class="app-container">
-    <div class="search-container">
+    <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-        <el-form-item label="字典标签" prop="name">
+        <el-form-item label="字典标签" prop="label">
           <el-input
-            v-model="queryParams.name"
+            v-model="queryParams.label"
             placeholder="字典标签"
             clearable
             @keyup.enter="handleQuery"
@@ -65,14 +65,12 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center"/>
-        <el-table-column label="字典标签" prop="name" align="center"/>
+        <el-table-column label="字典标签" prop="label" align="center"/>
         <el-table-column label="字典值" prop="value" align="center"/>
         <el-table-column label="排序" prop="sort" align="center"/>
         <el-table-column label="状态" align="center">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? "启用" : "禁用" }}
-            </el-tag>
+            <DictLabel v-model="scope.row.status" code="status"/>
           </template>
         </el-table-column>
 
@@ -127,8 +125,8 @@
         :rules="computedRules"
         label-width="100px"
       >
-        <el-form-item label="字典标签" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入字典标签"/>
+        <el-form-item label="字典标签" prop="label">
+          <el-input v-model="formData.label" placeholder="请输入字典标签"/>
         </el-form-item>
         <el-form-item label="字典值" prop="value">
           <el-input v-model="formData.value" placeholder="请输入字典值"/>
@@ -148,6 +146,19 @@
         <el-form-item label="备注" prop="remark">
           <el-input type="textarea" v-model="formData.remark" placeholder="请输入备注"/>
         </el-form-item>
+        <el-form-item label="标签类型" prop="tagType">
+          <el-tag v-if="formData.tagType" :type="formData.tagType">
+            {{ formData.label }}
+          </el-tag>
+          <el-radio-group v-model="formData.tagType">
+            <el-radio value="success">success</el-radio>
+            <el-radio value="warning">warning</el-radio>
+            <el-radio value="info">info</el-radio>
+            <el-radio value="primary">primary</el-radio>
+            <el-radio value="danger">danger</el-radio>
+            <el-radio value="">清空</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
 
       <template #footer>
@@ -166,12 +177,11 @@ defineOptions({
   name: "DictData",
   inherititems: false,
 });
-
 import DictDataAPI, {DictDataForm, DictDataPageVO} from "@/api/system/dict-data";
 
 const route = useRoute();
 
-const dictCode = ref(route.query.code as string);
+const dictCode = ref(route.query.dictCode as string);
 
 const queryFormRef = ref(ElForm);
 const dataFormRef = ref(ElForm);
@@ -183,8 +193,8 @@ const total = ref(0);
 const queryParams = reactive({
   pageNumber: 1,
   pageSize: 10,
-  code: dictCode.value,
-  name: undefined,
+  dictCode: dictCode.value,
+  label: undefined,
 });
 
 const tableData = ref<DictDataPageVO[]>();
@@ -200,9 +210,9 @@ const formData = reactive<DictDataForm>({
 
 // 监听路由参数变化，更新字典数据
 watch(
-  () => [route.query.code],
+  () => [route.query.dictCode],
   ([newDictCode]) => {
-    queryParams.code = newDictCode as string;
+    queryParams.dictCode = newDictCode as string;
     dictCode.value = newDictCode as string;
     handleQuery();
   }
@@ -210,7 +220,7 @@ watch(
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     value: [{required: true, message: "请输入字典值", trigger: "blur"}],
-    name: [{required: true, message: "请输入字典标签", trigger: "blur"}],
+    label: [{required: true, message: "请输入字典标签", trigger: "blur"}],
   };
   return rules;
 });
@@ -258,7 +268,7 @@ function handleSubmitClick() {
     if (isValid) {
       loading.value = true;
       const id = formData.id;
-      formData.code = dictCode.value;
+      formData.dictCode = dictCode.value;
       if (id) {
         DictDataAPI.update(id, formData)
           .then(() => {

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="search-container">
+    <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="菜单名称" prop="name">
           <el-input
@@ -77,21 +77,7 @@
 
         <el-table-column label="类型" align="center" width="80">
           <template #default="scope">
-            <el-tag
-              v-if="scope.row.type === MenuTypeEnum.CATALOG"
-              type="warning"
-            >
-              目录
-            </el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.MENU" type="success">
-              菜单
-            </el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.BUTTON" type="danger">
-              按钮
-            </el-tag>
-            <el-tag v-if="scope.row.type === MenuTypeEnum.EXTLINK" type="info">
-              外链
-            </el-tag>
+            <DictLabel v-model="scope.row.type" code="type"/>
           </template>
         </el-table-column>
 
@@ -123,10 +109,9 @@
           prop="perm"
         />
 
-        <el-table-column label="状态" align="center" width="80">
+        <el-table-column label="显示状态" align="center" width="80">
           <template #default="scope">
-            <el-tag v-if="scope.row.visible === 1" type="success">显示</el-tag>
-            <el-tag v-else type="info">隐藏</el-tag>
+            <DictLabel v-model="scope.row.visible" code="visible"/>
           </template>
         </el-table-column>
 
@@ -215,7 +200,7 @@
         </el-form-item>
 
         <el-form-item
-          v-if="formData.type === 'EXTLINK'"
+          v-if="formData.type === MenuTypeEnum.EXTLINK"
           label="外链地址"
           prop="path"
         >
@@ -302,69 +287,6 @@
             </template>
           </el-input>
         </el-form-item>
-
-        <!--        <el-form-item v-if="formData.type === MenuTypeEnum.MENU">-->
-        <!--          <template #label>-->
-        <!--            <div>-->
-        <!--              路由参数-->
-        <!--              <el-tooltip placement="bottom" effect="light">-->
-        <!--                <template #content>-->
-        <!--                  组件页面使用 `useRoute().query.参数名` 获取路由参数值。-->
-        <!--                </template>-->
-        <!--                <i-ep-QuestionFilled class="inline-block" />-->
-        <!--              </el-tooltip>-->
-        <!--            </div>-->
-        <!--          </template>-->
-
-        <!--          <div v-if="!formData.params || formData.params.length === 0">-->
-        <!--            <el-button-->
-        <!--              type="success"-->
-        <!--              plain-->
-        <!--              @click="formData.params = [{ key: '', value: '' }]"-->
-        <!--            >-->
-        <!--              添加路由参数-->
-        <!--            </el-button>-->
-        <!--          </div>-->
-
-        <!--          <div v-else>-->
-        <!--            <div v-for="(item, index) in formData.params" :key="index">-->
-        <!--              <el-input-->
-        <!--                v-model="item.key"-->
-        <!--                placeholder="参数名"-->
-        <!--                class="w-[100px]"-->
-        <!--              />-->
-
-        <!--              <span class="mx-1">=</span>-->
-
-        <!--              <el-input-->
-        <!--                v-model="item.value"-->
-        <!--                placeholder="参数值"-->
-        <!--                class="w-[100px]"-->
-        <!--              />-->
-
-        <!--              <el-icon-->
-        <!--                class="ml-2 cursor-pointer color-[var(&#45;&#45;el-color-success)]"-->
-        <!--                style="vertical-align: -0.15em"-->
-        <!--                v-if="-->
-        <!--                  formData.params.indexOf(item) === formData.params.length - 1-->
-        <!--                "-->
-        <!--                @click="formData.params.push({ key: '', value: '' })"-->
-        <!--              >-->
-        <!--                <CirclePlusFilled />-->
-        <!--              </el-icon>-->
-        <!--              <el-icon-->
-        <!--                class="ml-2 cursor-pointer color-[var(&#45;&#45;el-color-danger)]"-->
-        <!--                style="vertical-align: -0.15em"-->
-        <!--                @click="-->
-        <!--                  formData.params.splice(formData.params.indexOf(item), 1)-->
-        <!--                "-->
-        <!--              >-->
-        <!--                <DeleteFilled />-->
-        <!--              </el-icon>-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <!--        </el-form-item>-->
-
         <el-form-item
           v-if="formData.type !== MenuTypeEnum.BUTTON"
           prop="visible"
@@ -468,6 +390,7 @@ defineOptions({
 });
 
 import { MenuTypeEnum } from "@/enums/MenuTypeEnum";
+import DictLabel from "@/components/Dict/DictLabel.vue";
 
 const queryFormRef = ref(ElForm);
 const menuFormRef = ref(ElForm);

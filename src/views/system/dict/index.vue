@@ -1,7 +1,7 @@
 <!-- 分类字典 -->
 <template>
   <div class="app-container">
-    <div class="search-container">
+    <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="字典名称" prop="name">
           <el-input
@@ -42,9 +42,7 @@
           type="success"
           @click="handleAddClick()"
         >
-          <el-icon>
-            <Plus/>
-          </el-icon>
+          <el-icon><Plus/></el-icon>
           新增
         </el-button>
         <el-button
@@ -53,32 +51,43 @@
           :disabled="ids.length === 0"
           @click="handleDelete()"
         >
-          <el-icon>
-            <Delete/>
-          </el-icon>
+          <el-icon><Delete/></el-icon>
           删除
+        </el-button>
+        <el-button
+          v-hasPerm="['system:dict-type:refresh']"
+          color="#626aef"
+          @click="handleRefreshCache"
+        >
+          <el-icon><RefreshLeft /></el-icon>
+          刷新缓存
         </el-button>
       </div>
 
       <el-table
         v-loading="loading"
-        highlight-current-row
         :data="tableData"
-        border
+        highlight-current-row
+        :show-overflow-tooltip="true"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center"/>
-        <el-table-column label="字典名称" prop="name" align="center"/>
-        <el-table-column label="字典编码" prop="code" align="center" :show-overflow-tooltip="true">
-        </el-table-column>
+        <el-table-column label="字典名称" prop="name" width="160" align="left"/>
+        <el-table-column label="字典编码" prop="dictCode" width="200" align="left"/>
+        <el-table-column label="备注" prop="remark" width="400" align="left"/>
+        <el-table-column label="创建时间" prop="createTime" align="center"/>
         <el-table-column label="状态" prop="status" align="center">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? "启用" : "禁用" }}
-            </el-tag>
+            <el-switch
+              v-model="scope.row.status"
+              inline-prompt
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleStatusChange(scope.row)">
+            </el-switch>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" width="220">
+        <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button
               v-hasPerm="['system:dict-data:query']"
@@ -87,9 +96,7 @@
               size="small"
               @click.stop="handleOpenDictData(scope.row)"
             >
-              <template #icon>
-                <Collection />
-              </template>
+              <template #icon><Collection/></template>
               字典数据
             </el-button>
             <el-button
@@ -99,9 +106,7 @@
               size="small"
               @click.stop="handleEditClick(scope.row.id, scope.row.name)"
             >
-              <template #icon>
-                <Edit/>
-              </template>
+              <template #icon><Edit/></template>
               编辑
             </el-button>
             <el-button
@@ -111,9 +116,7 @@
               size="small"
               @click.stop="handleDelete(scope.row.id)"
             >
-              <template #icon>
-                <Delete/>
-              </template>
+              <template #icon><Delete/></template>
               删除
             </el-button>
           </template>
@@ -145,14 +148,21 @@
         <el-form-item label="字典名称:" prop="name">
           <el-input v-model="formData.name" placeholder="请输入字典名称"/>
         </el-form-item>
-        <el-form-item label="字典编码:" prop="code">
-          <el-input v-model="formData.code" placeholder="请输入字典编码"/>
+        <el-form-item label="字典编码:" prop="dictCode">
+          <el-input v-model="formData.dictCode" placeholder="请输入字典编码"/>
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="formData.status">
             <el-radio :value="1">启用</el-radio>
             <el-radio :value="0">禁用</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input
+            v-model="formData.remark"
+            type="textarea"
+            placeholder="请输入备注"
+          />
         </el-form-item>
       </el-form>
 
@@ -169,6 +179,7 @@
 <script setup lang="ts">
 import DictAPI, {DictForm, DictPageVO} from "@/api/system/dict-type";
 import router from "@/router";
+import {useDictStore} from "@/store";
 
 defineOptions({
   name: "Dict",
@@ -196,12 +207,14 @@ const dialog = reactive({
   visible: false,
 });
 
-const formData = reactive<DictForm>({});
+const formData = reactive<DictForm>({
+  status: 1
+});
 
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     name: [{required: true, message: "请输入字典名称", trigger: "blur"}],
-    code: [{required: true, message: "请输入字典编码", trigger: "blur"}],
+    dictCode: [{required: true, message: "请输入字典编码", trigger: "blur"}],
   };
   return rules;
 });
@@ -235,6 +248,12 @@ function handleSelectionChange(selection: any) {
 function handleAddClick() {
   dialog.visible = true;
   dialog.title = "新增字典";
+}
+
+function handleStatusChange(row: DictPageVO) {
+  DictAPI.updateStatus(row.id, row.status).then(() => {
+    ElMessage.success("字典状态修改成功");
+  });
 }
 
 /**
@@ -316,11 +335,23 @@ function handleDelete(id?: number) {
   );
 }
 
+/**
+ * 刷新缓存
+ */
+const dictStore = useDictStore();
+function handleRefreshCache() {
+  DictAPI.refreshCache().then(() => {
+    // 更新字典缓存
+    dictStore.updateDictionaryCache();
+    ElMessage.success("刷新成功");
+  });
+}
+
 // 打开字典数据
 function handleOpenDictData(row: DictPageVO) {
   router.push({
     path: "/system/dict-data",
-    query: { code: row.code, title: "字典数据" },
+    query: {dictCode: row.dictCode, title: "字典数据"},
   });
 }
 

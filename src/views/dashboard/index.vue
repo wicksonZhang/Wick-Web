@@ -1,96 +1,42 @@
 <template>
   <div class="dashboard-container">
-    <github-corner class="github-corner" />
+    <!--  Githup  -->
+    <github-corner class="github-corner"/>
 
-    <el-card shadow="never">
-      <el-row justify="space-between">
+    <el-card shadow="never" class="mt-2">
+      <el-row class="h-80px">
         <el-col :span="18" :xs="24">
-          <div class="flex h-full items-center">
+          <div class="flex-x-start">
             <img
-              class="w-20 h-20 mr-5 rounded-full"
-              :src="userStore.user.avatar + '?imageView2/1/w/80/h/80'"
+              class="w80px h80px rounded-full"
+              :src="userStore.userInfo.avatar + '?imageView2/1/w/80/h/80'"
             />
-            <div>
+            <div class="ml-5">
               <p>{{ greetings }}</p>
-              <p class="text-sm text-gray">
-                今日天气晴朗，气温在15℃至25℃之间，东南风。
-              </p>
+              <p class="text-sm text-gray">今日天气晴朗，气温在15℃至25℃之间，东南风。</p>
             </div>
-          </div>
-        </el-col>
-
-        <el-col :span="6" :xs="24">
-          <div class="flex h-full items-center justify-around">
-            <el-statistic
-              v-for="item in statisticData"
-              :key="item.key"
-              :value="item.value"
-            >
-              <template #title>
-                <div class="flex items-center">
-                  <svg-icon :icon-class="item.iconClass" size="20px" />
-                  <span class="text-[16px] ml-1">{{ item.title }}</span>
-                </div>
-              </template>
-              <template v-if="item.suffix" #suffix>/100</template>
-            </el-statistic>
           </div>
         </el-col>
       </el-row>
     </el-card>
 
-    <!-- 数据卡片 -->
+    <!-- 数据统计 -->
     <el-row :gutter="10" class="mt-5">
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card shadow="never">
-          <template #header>
-            <div class="flex-x-between">
-              <span class="text-[var(--el-text-color-secondary)]"
-                >在线用户</span
-              >
-              <el-tag type="success" size="small">-</el-tag>
-            </div>
-          </template>
-
-          <div class="flex-x-between mt-2">
-            <span class="text-lg"> 1</span>
-            <svg-icon icon-class="user" size="2em" />
-          </div>
-          <div
-            class="flex-x-between mt-2 text-sm text-[var(--el-text-color-secondary)]"
-          >
-            <span> 总用户数 </span>
-            <span>5 </span>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col
-        :xs="24"
-        :sm="12"
-        :lg="6"
-        v-for="(item, index) in visitStatsList"
-        :key="index"
-      >
+      <!-- 访客数(UV) -->
+      <el-col :span="12">
         <el-skeleton :loading="visitStatsLoading" :rows="5" animated>
           <template #template>
             <el-card>
               <template #header>
                 <div>
                   <el-skeleton-item variant="h3" style="width: 40%" />
-                  <el-skeleton-item
-                    variant="rect"
-                    style="float: right; width: 1em; height: 1em"
-                  />
+                  <el-skeleton-item variant="rect" style="float: right; width: 1em; height: 1em" />
                 </div>
               </template>
 
               <div class="flex-x-between">
                 <el-skeleton-item variant="text" style="width: 30%" />
-                <el-skeleton-item
-                  variant="circle"
-                  style="width: 2em; height: 2em"
-                />
+                <el-skeleton-item variant="circle" style="width: 2em; height: 2em" />
               </div>
               <div class="mt-5 flex-x-between">
                 <el-skeleton-item variant="text" style="width: 50%" />
@@ -102,38 +48,94 @@
             <el-card shadow="never">
               <template #header>
                 <div class="flex-x-between">
-                  <span class="text-[var(--el-text-color-secondary)]">{{
-                    item.title
-                  }}</span>
-                  <el-tag :type="item.tagType" size="small">
-                    {{ item.granularity }}
-                  </el-tag>
+                  <span class="text-gray">访客数(UV)</span>
+                  <el-tag type="success" size="small">日</el-tag>
                 </div>
               </template>
 
               <div class="flex-x-between mt-2">
                 <div class="flex-y-center">
-                  <span class="text-lg"> {{ item.todayCount }}</span>
+                  <span class="text-lg">{{ visitStatsData.todayUvCount }}</span>
                   <span
                     :class="[
                       'text-xs',
                       'ml-2',
-                      getGrowthRateClass(item.growthRate),
+                      computeGrowthRateClass(visitStatsData.uvGrowthRate),
                     ]"
                   >
-                    <i-ep-top v-if="item.growthRate > 0" />
-                    <i-ep-bottom v-else-if="item.growthRate < 0" />
-                    {{ formatGrowthRate(item.growthRate) }}
+                    <el-icon>
+                      <Top v-if="visitStatsData.uvGrowthRate > 0" />
+                      <Bottom v-else-if="visitStatsData.uvGrowthRate < 0" />
+                    </el-icon>
+                    {{ formatGrowthRate(visitStatsData.uvGrowthRate) }}
                   </span>
                 </div>
-                <svg-icon :icon-class="item.icon" size="2em" />
+                <div class="i-svg:visitor w-8 h-8" />
               </div>
 
-              <div
-                class="flex-x-between mt-2 text-sm text-[var(--el-text-color-secondary)]"
-              >
-                <span>总{{ item.title }} </span>
-                <span> {{ item.totalCount }} </span>
+              <div class="flex-x-between mt-2 text-sm text-gray">
+                <span>总访客数</span>
+                <span>{{ visitStatsData.totalUvCount }}</span>
+              </div>
+            </el-card>
+          </template>
+        </el-skeleton>
+      </el-col>
+
+      <!-- 浏览量(PV) -->
+      <el-col :span="12">
+        <el-skeleton :loading="visitStatsLoading" :rows="5" animated>
+          <template #template>
+            <el-card>
+              <template #header>
+                <div>
+                  <el-skeleton-item variant="h3" style="width: 40%" />
+                  <el-skeleton-item variant="rect" style="float: right; width: 1em; height: 1em" />
+                </div>
+              </template>
+
+              <div class="flex-x-between">
+                <el-skeleton-item variant="text" style="width: 30%" />
+                <el-skeleton-item variant="circle" style="width: 2em; height: 2em" />
+              </div>
+              <div class="mt-5 flex-x-between">
+                <el-skeleton-item variant="text" style="width: 50%" />
+                <el-skeleton-item variant="text" style="width: 1em" />
+              </div>
+            </el-card>
+          </template>
+          <template v-if="!visitStatsLoading">
+            <el-card shadow="never">
+              <template #header>
+                <div class="flex-x-between">
+                  <span class="text-gray">浏览量(PV)</span>
+                  <el-tag type="primary" size="small">日</el-tag>
+                </div>
+              </template>
+
+              <div class="flex-x-between mt-2">
+                <div class="flex-y-center">
+                  <span class="text-lg">{{ visitStatsData.todayPvCount }}</span>
+                  <span
+                    :class="[
+                      'text-xs',
+                      'ml-2',
+                      computeGrowthRateClass(visitStatsData.pvGrowthRate),
+                    ]"
+                  >
+                    <el-icon>
+                      <Top v-if="visitStatsData.pvGrowthRate > 0" />
+                      <Bottom v-else-if="visitStatsData.pvGrowthRate < 0" />
+                    </el-icon>
+                    {{ formatGrowthRate(visitStatsData.pvGrowthRate) }}
+                  </span>
+                </div>
+                <div class="i-svg:browser w-8 h-8" />
+              </div>
+
+              <div class="flex-x-between mt-2 text-sm text-gray">
+                <span>总浏览量</span>
+                <span>{{ visitStatsData.totalPvCount }}</span>
               </div>
             </el-card>
           </template>
@@ -142,43 +144,74 @@
     </el-row>
 
     <el-row :gutter="10" class="mt-5">
+      <!-- 访问趋势统计图 -->
       <el-col :xs="24" :span="16">
-        <!-- 访问趋势统计图 -->
-        <VisitTrend id="VisitTrend" width="100%" height="400px" />
+        <el-card>
+          <template #header>
+            <div class="flex-x-between">
+              <span>访问趋势</span>
+              <el-radio-group v-model="visitTrendDateRange" size="small">
+                <el-radio-button label="近7天" :value="7" />
+                <el-radio-button label="近30天" :value="30" />
+              </el-radio-group>
+            </div>
+          </template>
+          <ECharts :options="visitTrendChartOptions" height="400px" />
+        </el-card>
       </el-col>
+      <!-- 最新动态 -->
       <el-col :xs="24" :span="8">
         <el-card>
           <template #header>
             <div class="flex-x-between">
-              <div class="flex-y-center">
-                通知公告<el-icon class="ml-1"><Notification /></el-icon>
-              </div>
-              <el-link type="primary">
-                <span class="text-xs">查看更多</span
-                ><el-icon class="text-xs"><ArrowRight /></el-icon
-              ></el-link>
+              <span class="header-title">最新动态</span>
+              <el-link
+                type="primary"
+                :underline="false"
+                href="https://gitee.com/youlaiorg/vue3-element-admin/releases"
+                target="_blank"
+              >
+                完整记录
+                <el-icon class="link-icon"><TopRight /></el-icon>
+              </el-link>
             </div>
           </template>
 
           <el-scrollbar height="400px">
-            <div
-              v-for="(item, index) in notices"
-              :key="index"
-              class="flex-y-center py-3"
-            >
-              <el-tag :type="getNoticeLevelTag(item.level)" size="small">
-                {{ getNoticeLabel(item.type) }}
-              </el-tag>
-              <el-text
-                truncated
-                class="!mx-2 flex-1 !text-xs !text-[var(--el-text-color-secondary)]"
+            <el-timeline class="p-3">
+              <el-timeline-item
+                v-for="(item, index) in versionList"
+                :key="index"
+                :timestamp="item.date"
+                placement="top"
+                :color="index === 0 ? '#67C23A' : '#909399'"
+                :hollow="index !== 0"
+                size="large"
               >
-                {{ item.title }}
-              </el-text>
-              <el-link>
-                <el-icon class="text-sm"><View /></el-icon>
-              </el-link>
-            </div>
+                <div class="version-item" :class="{ 'latest-item': index === 0 }">
+                  <div>
+                    <el-text tag="strong">{{ item.title }}</el-text>
+                    <el-tag v-if="item.tag" :type="index === 0 ? 'success' : 'info'" size="small">
+                      {{ item.tag }}
+                    </el-tag>
+                  </div>
+
+                  <el-text class="version-content">{{ item.content }}</el-text>
+
+                  <div v-if="item.link">
+                    <el-link
+                      :type="index === 0 ? 'primary' : 'info'"
+                      :href="item.link"
+                      target="_blank"
+                      :underline="false"
+                    >
+                      详情
+                      <el-icon class="link-icon"><TopRight /></el-icon>
+                    </el-link>
+                  </div>
+                </div>
+              </el-timeline-item>
+            </el-timeline>
           </el-scrollbar>
         </el-card>
       </el-col>
@@ -192,102 +225,196 @@ defineOptions({
   inheritAttrs: false,
 });
 
+import { dayjs } from "element-plus";
+import DashboardAPI, { VisitStatsVO, VisitTrendVO } from "@/api/system/dashboard";
 import { useUserStore } from "@/store/modules/user";
-import { NoticeTypeEnum, getNoticeLabel } from "@/enums/NoticeTypeEnum";
+import { formatGrowthRate } from "@/utils";
 
-import StatsAPI, { VisitStatsVO } from "@/api/system/log";
+interface VersionItem {
+  id: string;
+  title: string; // 版本标题（如：v2.4.0）
+  date: string; // 发布时间
+  content: string; // 版本描述
+  link: string; // 详情链接
+  tag?: string; // 版本标签（可选）
+}
+
 const userStore = useUserStore();
 
-const date: Date = new Date();
+// 当前通知公告列表
+const versionList = ref<VersionItem[]>([
+  {
+    id: "1",
+    title: "v2.4.0",
+    date: "2021-09-01 00:00:00",
+    content: "实现基础框架搭建，包含权限管理、路由系统等核心功能。",
+    link: "https://gitee.com/youlaiorg/vue3-element-admin/releases",
+    tag: "里程碑",
+  },
+  {
+    id: "1",
+    title: "v2.4.0",
+    date: "2021-09-01 00:00:00",
+    content: "实现基础框架搭建，包含权限管理、路由系统等核心功能。",
+    link: "https://gitee.com/youlaiorg/vue3-element-admin/releases",
+    tag: "里程碑",
+  },
+  {
+    id: "1",
+    title: "v2.4.0",
+    date: "2021-09-01 00:00:00",
+    content: "实现基础框架搭建，包含权限管理、路由系统等核心功能。",
+    link: "https://gitee.com/youlaiorg/vue3-element-admin/releases",
+    tag: "里程碑",
+  },
+]);
+
+// 当前时间（用于计算问候语）
+const currentDate = new Date();
+
+// 问候语：根据当前小时返回不同问候语
 const greetings = computed(() => {
-  const hours = date.getHours();
+  const hours = currentDate.getHours();
+  const nickname = userStore.userInfo.nickname;
   if (hours >= 6 && hours < 8) {
     return "晨起披衣出草堂，轩窗已自喜微凉🌅！";
   } else if (hours >= 8 && hours < 12) {
-    return "上午好，" + userStore.user.nickname + "！";
+    return `上午好，${nickname}！`;
   } else if (hours >= 12 && hours < 18) {
-    return "下午好，" + userStore.user.nickname + "！";
+    return `下午好，${nickname}！`;
   } else if (hours >= 18 && hours < 24) {
-    return "晚上好，" + userStore.user.nickname + "！";
+    return `晚上好，${nickname}！`;
   } else {
     return "偷偷向银河要了一把碎星，只等你闭上眼睛撒入你的梦中，晚安🌛！";
   }
 });
 
-// 右上角数量
-const statisticData = ref([
-  {
-    value: 99,
-    iconClass: "message",
-    title: "消息",
-    key: "message",
-  },
-  {
-    value: 50,
-    iconClass: "todo",
-    title: "待办",
-    suffix: "/100",
-    key: "upcoming",
-  },
-  {
-    value: 10,
-    iconClass: "project",
-    title: "项目",
-    key: "project",
-  },
-]);
-
+// 访客统计数据加载状态
 const visitStatsLoading = ref(true);
-const visitStatsList = ref<VisitStats[] | null>(Array(3).fill({}));
-interface VisitStats {
-  title: string;
-  icon: string;
-  tagType: "primary" | "success" | "warning";
-  growthRate: number;
-  /** 粒度 */
-  granularity: string;
-  /** 今日数量输出文档  */
-  todayCount: number;
-  totalCount: number;
-}
-/** 加载访问统计数据 */
-const loadVisitStatsData = async () => {
-  // const list: VisitStatsVO[] = await StatsAPI.getVisitStats();
+// 访客统计数据
+const visitStatsData = ref<VisitStatsVO>({
+  todayUvCount: 0,
+  uvGrowthRate: 0,
+  totalUvCount: 0,
+  todayPvCount: 0,
+  pvGrowthRate: 0,
+  totalPvCount: 0,
+});
 
-  // if (list) {
-  //   const tagTypes: ("primary" | "success" | "warning")[] = [
-  //     "primary",
-  //     "success",
-  //     "warning",
-  //   ];
-  //   const transformedList: VisitStats[] = list.map((item, index) => ({
-  //     title: item.title,
-  //     icon: getVisitStatsIcon(item.type),
-  //     tagType: tagTypes[index % tagTypes.length],
-  //     growthRate: item.growthRate,
-  //     granularity: "日",
-  //     todayCount: item.todayCount,
-  //     totalCount: item.totalCount,
-  //   }));
-  //   visitStatsList.value = transformedList;
-  //   visitStatsLoading.value = false;
-  // }
+// 访问趋势日期范围（单位：天）
+const visitTrendDateRange = ref(7);
+// 访问趋势图表配置
+const visitTrendChartOptions = ref();
+
+/**
+ * 获取访客统计数据
+ */
+const fetchVisitStatsData = () => {
+  DashboardAPI.getVisitStats()
+    .then((data) => {
+      visitStatsData.value = data;
+    })
+    .finally(() => {
+      visitStatsLoading.value = false;
+    });
 };
 
-/** 格式化增长率 */
-const formatGrowthRate = (growthRate: number): string => {
-  if (growthRate === 0) {
-    return "-";
+/**
+ * 获取访问趋势数据，并更新图表配置
+ */
+const fetchVisitTrendData = () => {
+  const startDate = dayjs()
+    .subtract(visitTrendDateRange.value - 1, "day")
+    .toDate();
+  const endDate = new Date();
+
+  DashboardAPI.getVisitTrend({
+    startDate: dayjs(startDate).format("YYYY-MM-DD"),
+    endDate: dayjs(endDate).format("YYYY-MM-DD"),
+  }).then((data) => {
+    updateVisitTrendChartOptions(data);
+  });
+};
+
+/**
+ * 更新访问趋势图表的配置项
+ *
+ * @param data - 访问趋势数据
+ */
+const updateVisitTrendChartOptions = (data: VisitTrendVO) => {
+  console.log("Updating visit trend chart options");
+
+  visitTrendChartOptions.value = {
+    tooltip: {
+      trigger: "axis",
+    },
+    legend: {
+      data: ["浏览量(PV)", "访客数(UV)"],
+      bottom: 0,
+    },
+    grid: {
+      left: "1%",
+      right: "5%",
+      bottom: "10%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "category",
+      data: data.dates,
+    },
+    yAxis: {
+      type: "value",
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: "dashed",
+        },
+      },
+    },
+    series: [
+      {
+        name: "浏览量(PV)",
+        type: "line",
+        data: data.pvList,
+        areaStyle: {
+          color: "rgba(64, 158, 255, 0.1)",
+        },
+        smooth: true,
+        itemStyle: {
+          color: "#4080FF",
+        },
+        lineStyle: {
+          color: "#4080FF",
+        },
+      },
+      {
+        name: "访客数(UV)",
+        type: "line",
+        data: data.ipList,
+        areaStyle: {
+          color: "rgba(103, 194, 58, 0.1)",
+        },
+        smooth: true,
+        itemStyle: {
+          color: "#67C23A",
+        },
+        lineStyle: {
+          color: "#67C23A",
+        },
+      },
+    ],
+  };
+};
+
+/**
+ * 根据增长率计算对应的 CSS 类名
+ *
+ * @param growthRate - 增长率数值
+ */
+const computeGrowthRateClass = (growthRate?: number): string => {
+  if (!growthRate) {
+    return "color-[--el-color-info]";
   }
-
-  const formattedRate = Math.abs(growthRate * 100)
-    .toFixed(2)
-    .replace(/\.?0+$/, "");
-  return formattedRate + "%";
-};
-
-/** 获取增长率文本颜色类 */
-const getGrowthRateClass = (growthRate: number): string => {
   if (growthRate > 0) {
     return "color-[--el-color-danger]";
   } else if (growthRate < 0) {
@@ -297,95 +424,19 @@ const getGrowthRateClass = (growthRate: number): string => {
   }
 };
 
-/** 获取访问统计图标 */
-const getVisitStatsIcon = (type: string) => {
-  switch (type) {
-    case "pv":
-      return "pv";
-    case "uv":
-      return "uv";
-    case "ip":
-      return "ip";
-    default:
-      return "pv";
-  }
-};
+// 监听访问趋势日期范围的变化，重新获取趋势数据
+watch(
+  () => visitTrendDateRange.value,
+  (newVal) => {
+    console.log("Visit trend date range changed:", newVal);
+    fetchVisitTrendData();
+  },
+  { immediate: true }
+);
 
-const notices = ref([
-  {
-    level: 2,
-    type: NoticeTypeEnum.SYSTEM_UPGRADE,
-    title: "v2.12.0 新增系统日志，访问趋势统计功能。",
-  },
-  {
-    level: 0,
-    type: NoticeTypeEnum.COMPANY_NEWS,
-    title: "公司将在 7 月 1 日举办年中总结大会，请各部门做好准备。",
-  },
-  {
-    level: 3,
-    type: NoticeTypeEnum.HOLIDAY_NOTICE,
-    title: "端午节假期从 6 月 12 日至 6 月 14 日放假，共 3 天。",
-  },
-
-  {
-    level: 2,
-    type: NoticeTypeEnum.SECURITY_ALERT,
-    title: "最近发现一些钓鱼邮件，请大家提高警惕，不要点击陌生链接。",
-  },
-  {
-    level: 2,
-    type: NoticeTypeEnum.SYSTEM_MAINTENANCE,
-    title: "系统将于本周六凌晨 2 点进行维护，预计维护时间为 2 小时。",
-  },
-  {
-    level: 0,
-    type: NoticeTypeEnum.OTHER,
-    title: "公司新规章制度发布，请大家及时查阅。",
-  },
-  {
-    level: 3,
-    type: NoticeTypeEnum.HOLIDAY_NOTICE,
-    title: "中秋节假期从 9 月 22 日至 9 月 24 日放假，共 3 天。",
-  },
-  {
-    level: 1,
-    type: NoticeTypeEnum.COMPANY_NEWS,
-    title: "公司将在 10 月 15 日举办新产品发布会，敬请期待。",
-  },
-  {
-    level: 2,
-    type: NoticeTypeEnum.SECURITY_ALERT,
-    title:
-      "请注意，近期有恶意软件通过即时通讯工具传播，请勿下载不明来源的文件。",
-  },
-  {
-    level: 2,
-    type: NoticeTypeEnum.SYSTEM_MAINTENANCE,
-    title: "系统将于下周日凌晨 3 点进行升级，预计维护时间为 1 小时。",
-  },
-  {
-    level: 3,
-    type: NoticeTypeEnum.OTHER,
-    title: "公司年度体检通知已发布，请各位员工按时参加。",
-  },
-]);
-
-const getNoticeLevelTag = (type: number) => {
-  switch (type) {
-    case 0:
-      return "danger";
-    case 1:
-      return "warning";
-    case 2:
-      return "primary";
-    default:
-      return "success";
-  }
-};
-
+// 组件挂载后加载访客统计数据和通知公告数据
 onMounted(() => {
-  loadVisitStatsData();
+  fetchVisitStatsData();
 });
 </script>
 
@@ -400,6 +451,28 @@ onMounted(() => {
     right: 0;
     z-index: 1;
     border: 0;
+  }
+
+  .version-item {
+    padding: 16px;
+    margin-bottom: 12px;
+    background: var(--el-fill-color-lighter);
+    border-radius: 8px;
+    transition: all 0.2s;
+
+    &.latest-item {
+      background: var(--el-color-primary-light-9);
+      border: 1px solid var(--el-color-primary-light-5);
+    }
+    &:hover {
+      transform: translateX(5px);
+    }
+    .version-content {
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--el-text-color-secondary);
+    }
   }
 }
 </style>

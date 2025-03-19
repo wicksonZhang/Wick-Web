@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="search-container">
+    <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item prop="keywords" label="角色名称">
           <el-input
@@ -25,14 +25,18 @@
             type="primary"
             @click="handleQuery"
           >
-            <template #icon><Search /></template>
+            <template #icon>
+              <Search/>
+            </template>
             搜索
           </el-button>
           <el-button
             v-hasPerm="['system:user:query']"
             @click="handleResetQuery"
           >
-            <template #icon><Refresh /></template>
+            <template #icon>
+              <Refresh/>
+            </template>
             重置
           </el-button>
         </el-form-item>
@@ -47,7 +51,7 @@
           @click="handleOpenDialog()"
         >
           <el-icon>
-            <Plus />
+            <Plus/>
           </el-icon>
           新增
         </el-button>
@@ -58,7 +62,7 @@
           @click="handleDelete()"
         >
           <el-icon>
-            <Delete />
+            <Delete/>
           </el-icon>
           删除
         </el-button>
@@ -70,18 +74,16 @@
         :data="roleList"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="角色名称" prop="name" align="center" />
-        <el-table-column label="角色编码" prop="code" align="center" />
-
-        <el-table-column label="状态" align="center">
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column label="角色名称" prop="name" align="center"/>
+        <el-table-column label="角色编码" prop="code" align="center"/>
+        <el-table-column label="状态" prop="status" align="center">
           <template #default="scope">
-            <el-tag v-if="scope.row.status === 1" type="success">正常</el-tag>
-            <el-tag v-else type="info">禁用</el-tag>
+            <DictLabel v-model="scope.row.status" code="status"/>
           </template>
         </el-table-column>
 
-        <el-table-column label="排序" align="center" prop="sort" />
+        <el-table-column label="排序" align="center" prop="sort"/>
         <el-table-column fixed="right" label="操作" width="220">
           <template #default="scope">
             <el-button
@@ -91,7 +93,9 @@
               link
               @click="handleOpenAssignPermDialog(scope.row)"
             >
-              <template #icon><Position /></template>
+              <template #icon>
+                <Position/>
+              </template>
               分配权限
             </el-button>
             <el-button
@@ -101,7 +105,9 @@
               link
               @click="handleOpenDialog(scope.row.id)"
             >
-              <template #icon><Edit /></template>
+              <template #icon>
+                <Edit/>
+              </template>
               编辑
             </el-button>
             <el-button
@@ -111,7 +117,9 @@
               link
               @click="handleDelete(scope.row.id)"
             >
-              <template #icon><Delete /></template>
+              <template #icon>
+                <Delete/>
+              </template>
               删除
             </el-button>
           </template>
@@ -141,21 +149,15 @@
         label-width="100px"
       >
         <el-form-item label="角色名称" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入角色名称" />
+          <el-input v-model="formData.name" placeholder="请输入角色名称"/>
         </el-form-item>
 
         <el-form-item label="角色编码" prop="code">
-          <el-input v-model="formData.code" placeholder="请输入角色编码" />
+          <el-input v-model="formData.code" placeholder="请输入角色编码"/>
         </el-form-item>
 
         <el-form-item label="数据权限" prop="dataScope">
-          <el-select v-model="formData.dataScope">
-            <el-option :key="1" label="全部数据" :value="1" />
-            <el-option :key="2" label="自定数据权限" :value="2" />
-            <el-option :key="3" label="部门数据权限" :value="3" />
-            <el-option :key="4" label="部门及以下数据权限" :value="4" />
-            <el-option :key="5" label="仅本人数据权限" :value="5" />
-          </el-select>
+          <dictionary v-model="formData.dataScope" code="dataScope"/>
         </el-form-item>
 
         <el-form-item label="状态" prop="status">
@@ -197,7 +199,7 @@
           placeholder="菜单权限名称"
         >
           <template #prefix>
-            <i-ep-search />
+            <i-ep-search/>
           </template>
         </el-input>
       </div>
@@ -232,7 +234,7 @@
 </template>
 
 <script setup lang="ts">
-import RoleAPI, { RoleForm, RolePageVO } from "@/api/system/role";
+import RoleAPI, {RoleForm, RolePageVO} from "@/api/system/role";
 import MenuAPI from "@/api/system/menu";
 
 defineOptions({
@@ -274,10 +276,10 @@ const formData = reactive<RoleForm>({
 });
 
 const rules = reactive({
-  name: [{ required: true, message: "请输入角色名称", trigger: "blur" }],
-  code: [{ required: true, message: "请输入角色编码", trigger: "blur" }],
-  dataScope: [{ required: true, message: "请选择数据权限", trigger: "blur" }],
-  status: [{ required: true, message: "请选择状态", trigger: "blur" }],
+  name: [{required: true, message: "请输入角色名称", trigger: "blur"}],
+  code: [{required: true, message: "请输入角色编码", trigger: "blur"}],
+  dataScope: [{required: true, message: "请选择数据权限", trigger: "blur"}],
+  status: [{required: true, message: "请选择状态", trigger: "blur"}],
 });
 
 // 选中的角色
@@ -446,20 +448,6 @@ function handleAssignPermSubmit() {
   }
 }
 
-/** 展开/收缩 菜单权限树  */
-function togglePermTree() {
-  isExpanded.value = !isExpanded.value;
-  if (permTreeRef.value) {
-    Object.values(permTreeRef.value.store.nodesMap).forEach((node: any) => {
-      if (isExpanded.value) {
-        node.expand();
-      } else {
-        node.collapse();
-      }
-    });
-  }
-}
-
 /** 权限筛选 */
 watch(permKeywords, (val) => {
   permTreeRef.value!.filter(val);
@@ -473,11 +461,6 @@ function handlePermFilter(
 ) {
   if (!value) return true;
   return data.label.includes(value);
-}
-
-/** 父子菜单节点是否联动 change*/
-function handleparentChildLinkedChange(val: any) {
-  parentChildLinked.value = val;
 }
 
 onMounted(() => {

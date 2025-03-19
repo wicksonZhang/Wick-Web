@@ -30,9 +30,9 @@ class GeneratorAPI {
   }
 
   /** 导入选中数据表的数据 */
-  static importTable(tableNames: string) {
+  static importTable(tableNames: string, dataSourceId: number) {
     return request({
-      url: `${GENERATOR_BASE_URL}/importTable/${tableNames}`,
+      url: `${GENERATOR_BASE_URL}/importTable/${tableNames}/${dataSourceId}`,
       method: "post",
     });
   }

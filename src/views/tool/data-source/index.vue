@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="search-container">
+    <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="参数名称" prop="name">
           <el-input
@@ -65,6 +65,7 @@
         ref="dataTableRef"
         v-loading="loading"
         :data="pageData"
+        border
         highlight-current-row
         show-overflow-tooltip
         @selection-change="handleSelectionChange"
@@ -75,7 +76,7 @@
           key="id"
           label="主键编号"
           prop="id"
-          min-width="100"
+          min-width="50"
         />
         <el-table-column
           align="center"
@@ -146,7 +147,6 @@
             v-model="formData.name"
             placeholder="参数名称"
             clearable
-            @keyup.enter="handleQuery()"
           />
         </el-form-item>
         <el-form-item label="数据源连接" prop="url">
@@ -160,12 +160,20 @@
             v-model="formData.username"
             placeholder="用户名"
             clearable
-            @keyup.enter="handleQuery()"
+          />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="formData.password"
+            placeholder="用户名"
+            type="password"
+            clearable
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
+          <el-button type="success" @click="testConnection()">测试连接</el-button>
           <el-button type="primary" @click="handleSubmit()">确定</el-button>
           <el-button @click="handleCloseDialog()">取消</el-button>
         </div>
@@ -252,6 +260,17 @@ function handleOpenDialog(id?: number) {
   } else {
     dialog.title = "新增数据源配置";
   }
+}
+
+/** 测试连接 */
+function testConnection() {
+  ToolDataSourceAPI.testConnection(formData).then((data) => {
+    if (data) {
+      ElMessage.success("连接成功");
+    } else {
+      ElMessage.error("连接失败,请检查数据库连接信息");
+    }
+  })
 }
 
 /** 提交data-source表单 */

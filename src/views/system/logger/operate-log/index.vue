@@ -1,14 +1,9 @@
 <template>
   <div class="app-container">
     <!-- 搜索栏 -->
-    <div class="search-container">
+    <div class="search-bar">
       <!-- 搜索工作栏 -->
-      <el-form
-        ref="queryFormRef"
-        :model="queryParams"
-        :inline="true"
-        label-width="68px"
-      >
+      <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="操作人" prop="userId">
           <el-select
             v-model="queryParams.userId"
@@ -30,21 +25,7 @@
           />
         </el-form-item>
         <el-form-item label="操作类型" prop="type">
-          <el-select
-            v-model="queryParams.type"
-            clearable
-            filterable
-            placeholder="请输入操作类型"
-            class="!w-240px"
-          >
-            <el-option label="其他" value="0" />
-            <el-option label="查询" value="1" />
-            <el-option label="新增" value="2" />
-            <el-option label="修改" value="3" />
-            <el-option label="删除" value="4" />
-            <el-option label="导入" value="5" />
-            <el-option label="导出" value="6" />
-          </el-select>
+          <dictionary class="!w-240px" v-model="queryParams.type" code="operateType"/>
         </el-form-item>
         <el-form-item label="操作时间" prop="createTime">
           <el-date-picker
@@ -95,11 +76,12 @@
         </div>
       </template>
       <el-table v-loading="loading" :data="pageData">
-        <el-table-column label="日志编号" align="center" prop="id" />
-        <el-table-column label="操作人" align="center" prop="userName" />
+        <el-table-column label="日志编号" align="center" width="120" prop="id" />
+        <el-table-column label="操作人" align="center" width="110" prop="userName" />
         <el-table-column label="操作地址" align="center" prop="userIp" />
         <el-table-column
           label="操作地点"
+          width="120"
           align="center"
           prop="operateLocation"
         />
@@ -110,23 +92,14 @@
           prop="name"
           width="180"
         />
-        <el-table-column label="操作类型" align="center" prop="type">
+        <el-table-column label="操作类型"  width="100" align="center" prop="type">
           <template #default="scope">
-            <el-tag v-if="scope.row.type === 0" type="info">其它</el-tag>
-            <el-tag v-if="scope.row.type === 1" type="info">查询</el-tag>
-            <el-tag v-if="scope.row.type === 2" type="primary">新增</el-tag>
-            <el-tag v-if="scope.row.type === 3" type="warning">修改</el-tag>
-            <el-tag v-if="scope.row.type === 4" type="danger">删除</el-tag>
-            <el-tag v-if="scope.row.type === 5" type="info">导出</el-tag>
-            <el-tag v-if="scope.row.type === 6" type="info">导入</el-tag>
+            <DictLabel v-model="scope.row.type" code="operateType"/>
           </template>
         </el-table-column>
-        <el-table-column label="操作结果" align="center" prop="status">
+        <el-table-column label="操作结果" width="100" align="center" prop="status">
           <template #default="scope">
-            <el-tag v-if="scope.row.resultCode === 0" type="success">
-              成功
-            </el-tag>
-            <el-tag v-else type="danger">失败</el-tag>
+            <DictLabel v-model="scope.row.resultCode" code="resultCode"/>
           </template>
         </el-table-column>
         <el-table-column
@@ -139,7 +112,7 @@
             <span>{{ scope.row.startTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="执行时长" align="center" prop="startTime">
+        <el-table-column label="执行时长" width="120" align="center" prop="startTime">
           <template #default="scope">
             <span>{{ scope.row.duration }} ms</span>
           </template>
@@ -170,8 +143,9 @@
 </template>
 
 <script setup lang="ts">
-import OperateLogDetail from "@/views/system/logger/operate-log/components/operate-log-detail.vue";
+import OperateLogDetail from "@/views/system/logger/operate-log/components/UperateLogDetail.vue";
 import LoggerAPI, { OperateLogPageVO } from "@/api/system/logger";
+import DictLabel from "@/components/Dict/DictLabel.vue";
 
 defineOptions({
   name: "OperateLog",

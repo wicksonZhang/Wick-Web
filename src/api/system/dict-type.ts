@@ -2,20 +2,20 @@ import request from "@/utils/request";
 
 const BASE_URL = "/api/v1/system/dict-type";
 
-class DictAPI {
+const DictAPI = {
   /**
    * 获取字典分页列表
    *
    * @param queryParams 查询参数
    * @returns 字典分页结果
    */
-  static getPage(queryParams: PageQuery) {
+  getPage(queryParams: PageQuery) {
     return request<any, PageResult<DictPageVO[]>>({
       url: `${BASE_URL}/page`,
       method: "get",
       params: queryParams,
     });
-  }
+  },
 
   /**
    * 获取字典表单数据
@@ -23,25 +23,25 @@ class DictAPI {
    * @param id 字典ID
    * @returns 字典表单数据
    */
-  static getFormData(id: number) {
+  getFormData(id: number) {
     return request<any, ResponseData<DictForm>>({
       url: `${BASE_URL}/${id}`,
       method: "get",
     });
-  }
+  },
 
   /**
    * 新增字典
    *
    * @param data 字典表单数据
    */
-  static add(data: DictForm) {
+  add(data: DictForm) {
     return request({
       url: `${BASE_URL}/add`,
       method: "post",
       data: data,
     });
-  }
+  },
 
   /**
    * 修改字典
@@ -49,38 +49,58 @@ class DictAPI {
    * @param id 字典ID
    * @param data 字典表单数据
    */
-  static update(data: DictForm) {
+  update(data: DictForm) {
     return request({
       url: `${BASE_URL}/update`,
       method: "put",
       data: data,
     });
-  }
+  },
 
   /**
    * 删除字典
    *
    * @param ids 字典ID，多个以英文逗号(,)分隔
    */
-  static deleteByIds(ids: string) {
+  deleteByIds(ids: string) {
     return request({
       url: `${BASE_URL}/${ids}`,
       method: "delete",
     });
-  }
+  },
 
   /**
    * 获取字典列表
    *
    * @returns 字典列表
    */
-  static getList() {
-    return request<any, OptionType[]>({
+  getList() {
+    return request<any, DictVO[]>({
       url: `${BASE_URL}/list`,
       method: "get",
     });
-  }
+  },
 
+  /**
+   * 刷新缓存
+   */
+  refreshCache() {
+    return request({
+      url: `${BASE_URL}/refreshCache`,
+      method: "patch",
+    });
+  },
+  /**
+   * 修改字典状态
+   * @param id 字典id
+   * @param status 字典状态
+   */
+  updateStatus(id?: number, status?: number) {
+    return request({
+      url: `${BASE_URL}/updateStatus/${id}/${status}`,
+      method: "patch",
+    });
+  }
 }
 
 export default DictAPI;
@@ -100,11 +120,19 @@ export interface DictPageVO {
   /**
    * 字典编码
    */
-  code: string;
+  dictCode: string;
   /**
    * 字典状态（1-启用，0-禁用）
    */
   status: number;
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 创建时间
+   */
+  createTime?: Date;
 }
 
 /**
@@ -122,7 +150,7 @@ export interface DictForm {
   /**
    * 字典编码
    */
-  code?: string;
+  dictCode?: string;
   /**
    * 字典状态（1-启用，0-禁用）
    */
@@ -131,4 +159,36 @@ export interface DictForm {
    * 备注
    */
   remark?: string;
+}
+
+/**
+ * 字典数据项分页VO
+ *
+ * @description 字典数据分页对象
+ */
+export interface DictVO {
+  /** 字典名称 */
+  name: string;
+
+  /** 字典编码 */
+  dictCode: string;
+
+  /** 字典数据集合 */
+  dictDataList: DictData[];
+}
+
+/**
+ * 字典数据
+ *
+ * @description 字典数据
+ */
+export interface DictData {
+  /** 字典数据值 */
+  value: string;
+
+  /** 字典数据标签 */
+  label: string;
+
+  /** 标签类型 */
+  tagType: string;
 }

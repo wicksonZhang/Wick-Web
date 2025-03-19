@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="search-container">
+    <div class="search-bar">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
         <el-form-item label="部门名称" prop="name">
           <el-input
@@ -10,17 +10,8 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
-
         <el-form-item label="部门状态" prop="status">
-          <el-select
-            v-model="queryParams.status"
-            placeholder="全部"
-            clearable
-            class="!w-[100px]"
-          >
-            <el-option :value="1" label="正常" />
-            <el-option :value="0" label="禁用" />
-          </el-select>
+          <dictionary class="!w-240px" v-model="formData.status" code="status"/>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -81,8 +72,7 @@
         <el-table-column prop="code" label="部门编号" />
         <el-table-column prop="status" label="状态">
           <template #default="scope">
-            <el-tag v-if="scope.row.status === 1" type="success">正常</el-tag>
-            <el-tag v-else type="info">禁用</el-tag>
+            <DictLabel v-model="scope.row.status" code="status" />
           </template>
         </el-table-column>
 
@@ -181,6 +171,7 @@
 
 <script setup lang="ts">
 import DeptAPI, { DeptForm, DeptVO } from "@/api/system/dept";
+import DictLabel from "@/components/Dict/DictLabel.vue";
 
 defineOptions({
   name: "Dept",

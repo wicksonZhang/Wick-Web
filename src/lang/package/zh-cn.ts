@@ -1,5 +1,5 @@
 export default {
-  // 路由国际化
+  // 菜单国际化
   route: {
     dashboard: "首页",
     document: "项目文档",
@@ -56,8 +56,10 @@ export default {
     navigation: "导航设置",
     themeColor: "主题颜色",
     tagsView: "开启 Tags-View",
-    fixedHeader: "固定 Header",
     sidebarLogo: "侧边栏 Logo",
+    sidebarColorScheme: "侧边栏配色",
     watermark: "开启水印",
+    classicBlue: "经典蓝",
+    minimalWhite: "极简白",
   },
 };

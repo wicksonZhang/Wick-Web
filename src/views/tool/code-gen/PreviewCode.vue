@@ -8,15 +8,15 @@
     <div class="dialog-content">
       <!-- 左侧树形菜单 -->
       <el-col :span="6">
-          <el-scrollbar>
-            <el-tree
-              ref="treeRef"
-              :data="treeData"
-              default-expand-all
-              highlight-current
-              @node-click="handleNodeClick"
-            />
-          </el-scrollbar>
+        <el-scrollbar>
+          <el-tree
+            ref="treeRef"
+            :data="treeData"
+            default-expand-all
+            highlight-current
+            @node-click="handleNodeClick"
+          />
+        </el-scrollbar>
       </el-col>
 
       <!-- 右侧代码编辑器 -->

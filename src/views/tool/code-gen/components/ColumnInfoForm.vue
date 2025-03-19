@@ -1,6 +1,6 @@
 <template>
   <!-- 表格展示字段及其相关属性 -->
-  <el-table ref="formRef" :data="formData" :max-height="tableHeight" row-key="columnId">
+  <el-table ref="formRef" :data="columns" :max-height="tableHeight" row-key="columnId">
     <!-- 序号列，显示索引值 -->
     <el-table-column label="序号" type="index" min-width="5%"/>
 
@@ -120,17 +120,17 @@
     <!-- 字典类型，选择字典 -->
     <el-table-column label="字典类型" min-width="12%">
       <template #default="scope">
-        <el-select v-model="scope.row.dictType" clearable filterable placeholder="请选择">
+        <el-select v-model="scope.row.dictCode" clearable filterable placeholder="请选择">
           <!-- 动态加载字典选项 -->
           <el-option
             v-for="dict in dictOptions"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+            :key="dict.dictCode"
+            :label="dict.name"
+            :value="dict.dictCode"
           >
             <!-- 左侧显示字典标签，右侧显示字典值 -->
-            <span style="float: left">{{ dict.label }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">{{ dict.value }}</span>
+            <span style="float: left">{{ dict.name }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">({{ dict.dictCode }})</span>
           </el-option>
         </el-select>
       </template>
@@ -154,35 +154,17 @@ const props = defineProps({
   }
 })
 
-// 响应式数据，表格的实际数据
-const formData = ref<CodeGenColumnsInfoVO[]>([])
-
 // 设置表格的最大高度，动态根据窗口大小调整
 const tableHeight = document.documentElement.scrollHeight - 150 + 'px'
 
 // 字典选项列表，用于动态加载字典类型
 const dictOptions = ref()
-
 // 查询字典下拉列表数据
-function getDictOptions() {
+async function getDictOptions() {
   DictAPI.getList().then((data) => {
     dictOptions.value = data;
   })
 }
-
-// 监听 props.columns 的变化，实时更新 formData
-watch(
-  () => props.columns,
-  (columns) => {
-    if
-    (!columns) return
-    formData.value = columns
-  },
-  {
-    deep: true, // 深度监听，以检测嵌套属性的变化
-    immediate: true // 立即执行以确保在组件挂载时同步数据
-  }
-)
 
 // 在组件挂载时加载字典数据
 onMounted(async () => {

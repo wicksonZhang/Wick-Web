@@ -16,6 +16,16 @@ class ToolDataSourceAPI {
   }
 
   /**
+   * 获取数据源配置咧白哦
+   */
+  static getOptions() {
+    return request<any, OptionType[]>({
+      url: `${BASE_URL}/options`,
+      method: "get"
+    });
+  }
+
+  /**
    * 获取数据源配置数据
    *
    * @param id 数据源配置ID
@@ -68,6 +78,20 @@ class ToolDataSourceAPI {
       method: "delete",
     });
   }
+
+  /**
+   * 测试连接
+   *
+   * @param data
+   */
+  static testConnection(data: ToolDataSourceForm) {
+    return request({
+      url: `${BASE_URL}/testConnection`,
+      method: "post",
+      data: data,
+    });
+  }
+
 }
 
 export default ToolDataSourceAPI;

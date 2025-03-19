@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 搜索框 - 用于过滤表格数据 -->
-    <div class="search-container">
+    <div class="search-bar">
       <el-form :model="queryParams" ref="queryRef" :inline="true">
         <!-- 表名称输入框，支持回车键触发搜索 -->
         <el-form-item label="表名称" prop="tableName">
@@ -184,7 +184,7 @@
     <!-- 导入表弹窗 -->
     <PreviewCode ref="previewRef" />
     <!-- 预览代码弹窗 -->
-    <EditTable ref="handleEditRef" />
+    <EditTable ref="handleEditRef" @success="handleQuery"/>
     <!-- 编辑代码弹窗 -->
   </div>
 </template>

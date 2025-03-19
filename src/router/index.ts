@@ -44,13 +44,25 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "401",
-        component: () => import("@/views/error-page/401.vue"),
+        component: () => import("@/views/error/401.vue"),
         meta: { hidden: true },
       },
       {
         path: "404",
-        component: () => import("@/views/error-page/404.vue"),
+        component: () => import("@/views/error/404.vue"),
         meta: { hidden: true },
+      },
+      {
+        path: "profile",
+        name: "Profile",
+        component: () => import("@/views/profile/index.vue"),
+        meta: { title: "个人中心", icon: "user", hidden: true },
+      },
+      {
+        path: "myNotice",
+        name: "MyNotice",
+        component: () => import("@/views/system/notice/components/MyNotice.vue"),
+        meta: { title: "我的通知", icon: "user", hidden: true },
       },
     ],
   },
@@ -69,13 +81,6 @@ const router = createRouter({
 // 全局注册 router
 export function setupRouter(app: App<Element>) {
   app.use(router);
-}
-
-/**
- * 重置路由
- */
-export function resetRouter() {
-  router.replace({ path: "/login" });
 }
 
 export default router;

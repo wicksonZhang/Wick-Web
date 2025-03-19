@@ -1,46 +1,34 @@
 <template>
-  <div class="flex">
-    <template v-if="!isMobile">
-      <!--全屏 -->
-      <div class="setting-item" @click="toggle">
-        <svg-icon
-          :icon-class="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
-        />
-      </div>
+  <div :class="['navbar__right', navbarRightClass]">
+    <!-- 桌面端显示 -->
+    <template v-if="isDesktop">
+      <!-- 搜索 -->
+      <MenuSearch />
+
+      <!-- 全屏 -->
+      <Fullscreen />
 
       <!-- 布局大小 -->
-      <el-tooltip
-        :content="$t('sizeSelect.tooltip')"
-        effect="dark"
-        placement="bottom"
-      >
-        <size-select class="setting-item" />
-      </el-tooltip>
+      <SizeSelect />
 
       <!-- 语言选择 -->
-      <lang-select class="setting-item" />
+      <LangSelect />
+
+      <!-- 通知下拉 -->
+      <NoticeDropdown />
     </template>
 
-    <!-- 用户头像 -->
-    <el-dropdown class="setting-item" trigger="click">
-      <div class="flex-center h100% p10px">
-        <img
-          :src="userStore.user.avatar + '?imageView2/1/w/80/h/80'"
-          class="rounded-full mr-10px w24px w24px"
-        />
-        <span>{{ userStore.user.username }}</span>
+    <!-- 用户头像（个人中心、注销登录等） -->
+    <el-dropdown trigger="click">
+      <div class="user-profile">
+        <img class="user-profile__avatar" :src="userStore.userInfo.avatar" />
+        <span class="user-profile__name">{{ userStore.userInfo.username }}</span>
       </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <a
-            target="_blank"
-            href="https://gitee.com/youlaiorg/vue3-element-admin"
-          >
-            <el-dropdown-item>{{ $t("navbar.gitee") }}</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://juejin.cn/post/7228990409909108793">
-            <el-dropdown-item>{{ $t("navbar.document") }}</el-dropdown-item>
-          </a>
+          <el-dropdown-item @click="handleProfileClick">
+            {{ $t("navbar.profile") }}
+          </el-dropdown-item>
           <el-dropdown-item divided @click="logout">
             {{ $t("navbar.logout") }}
           </el-dropdown-item>
@@ -48,38 +36,50 @@
       </template>
     </el-dropdown>
 
-    <!-- 设置 -->
-    <template v-if="defaultSettings.showSettings">
-      <div class="setting-item" @click="settingStore.settingsVisible = true">
-        <svg-icon icon-class="setting" />
-      </div>
-    </template>
+    <!-- 设置面板 -->
+    <div v-if="defaultSettings.showSettings" @click="settingStore.settingsVisible = true">
+      <div class="i-svg:setting" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import {
-  useAppStore,
-  useTagsViewStore,
-  useUserStore,
-  useSettingsStore,
-} from "@/store";
 import defaultSettings from "@/settings";
 import { DeviceEnum } from "@/enums/DeviceEnum";
+import { useAppStore, useSettingsStore, useUserStore, useTagsViewStore } from "@/store";
+
+import { SidebarColorEnum, ThemeEnum } from "@/enums/ThemeEnum";
 
 const appStore = useAppStore();
-const tagsViewStore = useTagsViewStore();
-const userStore = useUserStore();
 const settingStore = useSettingsStore();
+const userStore = useUserStore();
+const tagsViewStore = useTagsViewStore();
 
 const route = useRoute();
 const router = useRouter();
-
-const isMobile = computed(() => appStore.device === DeviceEnum.MOBILE);
-
-const { isFullscreen, toggle } = useFullscreen();
+const isDesktop = computed(() => appStore.device === DeviceEnum.DESKTOP);
 
 /**
- * 注销
+ * 打开个人中心页面
+ */
+function handleProfileClick() {
+  router.push({ name: "Profile" });
+}
+
+// 根据主题和侧边栏配色方案选择 navbar 右侧的样式类
+const navbarRightClass = computed(() => {
+  // 如果暗黑主题
+  if (settingStore.theme === ThemeEnum.DARK) {
+    return "navbar__right--white";
+  }
+
+  // 如果侧边栏是经典蓝
+  if (settingStore.sidebarColorScheme === SidebarColorEnum.CLASSIC_BLUE) {
+    return "navbar__right--white";
+  }
+});
+
+/**
+ * 注销登录
  */
 function logout() {
   ElMessageBox.confirm("确定注销并退出系统吗？", "提示", {
@@ -99,30 +99,51 @@ function logout() {
   });
 }
 </script>
+
 <style lang="scss" scoped>
-.setting-item {
-  display: inline-block;
-  min-width: 40px;
-  height: $navbar-height;
-  line-height: $navbar-height;
-  color: var(--el-text-color);
-  text-align: center;
-  cursor: pointer;
+.navbar__right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &:hover {
-    background: rgb(0 0 0 / 10%);
+  & > * {
+    display: inline-block;
+    min-width: 40px;
+    height: $navbar-height;
+    line-height: $navbar-height;
+    color: var(--el-text-color);
+    text-align: center;
+    cursor: pointer;
+
+    &:hover {
+      background: rgb(0 0 0 / 10%);
+    }
+  }
+  .user-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 13px;
+
+    &__avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    &__name {
+      margin-left: 10px;
+    }
   }
 }
 
-.layout-top,
-.layout-mix {
-  .setting-item,
-  .el-icon {
-    color: var(--el-color-white);
-  }
+.layout-top .navbar__right--white > *,
+.layout-mix .navbar__right--white > * {
+  color: #fff;
 }
 
-.dark .setting-item:hover {
-  background: rgb(255 255 255 / 20%);
+.dark .navbar__right > *:hover {
+  color: #ccc;
 }
 </style>
