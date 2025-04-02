@@ -17,9 +17,9 @@
             clearable
             placeholder="全部"
           >
-            <el-option :value="0" label="未发布" />
-            <el-option :value="1" label="已发布" />
-            <el-option :value="-1" label="已撤回" />
+            <el-option :value="0" label="未发布"/>
+            <el-option :value="1" label="已发布"/>
+            <el-option :value="-1" label="已撤回"/>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -57,18 +57,18 @@
         highlight-current-row
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column type="index" label="序号" width="60" />
-        <el-table-column label="通知标题" prop="title" min-width="200" />
+        <el-table-column type="selection" width="55" align="center"/>
+        <el-table-column type="index" label="序号" width="60"/>
+        <el-table-column label="通知标题" prop="title" min-width="200"/>
         <el-table-column align="center" label="通知类型" width="150">
           <template #default="scope">
-            <DictLabel v-model="scope.row.type" :code="'notice_type'" />
+            <DictLabel v-model="scope.row.type" code="noticeType"/>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发布人" prop="publisherName" width="150" />
-        <el-table-column align="center" label="通知等级" width="100">
+        <el-table-column align="center" label="发布人" prop="publisherName" width="150"/>
+        <el-table-column align="center" label="通知等级" prop="level" width="100">
           <template #default="scope">
-            <DictLabel v-model="scope.row.level" code="notice_level" />
+            <DictLabel v-model="scope.row.level" code="noticeLevel"/>
           </template>
         </el-table-column>
         <el-table-column align="center" label="通告目标类型" prop="targetType" min-width="100">
@@ -107,7 +107,7 @@
               查看
             </el-button>
             <el-button
-              v-if="scope.row.publishStatus != 1"
+              v-if="scope.row.publishStatus !== 1"
               v-hasPerm="['system:notice:publish']"
               type="primary"
               size="small"
@@ -153,7 +153,7 @@
       <pagination
         v-if="total > 0"
         v-model:total="total"
-        v-model:page="queryParams.pageNum"
+        v-model:page="queryParams.pageNumber"
         v-model:limit="queryParams.pageSize"
         @pagination="handleQuery()"
       />
@@ -169,14 +169,14 @@
     >
       <el-form ref="dataFormRef" :model="formData" :rules="rules" label-width="100px">
         <el-form-item label="通知标题" prop="title">
-          <el-input v-model="formData.title" placeholder="通知标题" clearable />
+          <el-input v-model="formData.title" placeholder="通知标题" clearable/>
         </el-form-item>
 
         <el-form-item label="通知类型" prop="type">
-          <Dict v-model="formData.type" code="notice_type" />
+          <Dict v-model="formData.type" code="noticeType"/>
         </el-form-item>
         <el-form-item label="通知等级" prop="level">
-          <Dict v-model="formData.level" code="notice_level" />
+          <Dict v-model="formData.level" code="noticeLevel"/>
         </el-form-item>
         <el-form-item label="目标类型" prop="targetType">
           <el-radio-group v-model="formData.targetType">
@@ -184,7 +184,7 @@
             <el-radio :value="2">指定</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="formData.targetType == 2" label="指定用户" prop="targetUserIds">
+        <el-form-item v-if="formData.targetType === 2" label="指定用户" prop="targetUserIds">
           <el-select v-model="formData.targetUserIds" multiple search placeholder="请选择指定用户">
             <el-option
               v-for="item in userOptions"
@@ -195,7 +195,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="通知内容" prop="content">
-          <WangEditor v-model="formData.content" />
+          <WangEditor v-model="formData.content"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -219,7 +219,7 @@
           <div class="dialog-toolbar">
             <el-button circle @click="closeDetailDialog">
               <template #icon>
-                <Close />
+                <Close/>
               </template>
             </el-button>
           </div>
@@ -230,9 +230,9 @@
           {{ currentNotice.title }}
         </el-descriptions-item>
         <el-descriptions-item label="发布状态：">
-          <el-tag v-if="currentNotice.publishStatus == 0" type="info">未发布</el-tag>
-          <el-tag v-else-if="currentNotice.publishStatus == 1" type="success">已发布</el-tag>
-          <el-tag v-else-if="currentNotice.publishStatus == -1" type="warning">已撤回</el-tag>
+          <el-tag v-if="currentNotice.publishStatus === 0" type="info">未发布</el-tag>
+          <el-tag v-else-if="currentNotice.publishStatus === 1" type="success">已发布</el-tag>
+          <el-tag v-else-if="currentNotice.publishStatus === -1" type="warning">已撤回</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="发布人：">
           {{ currentNotice.publisherName }}
@@ -241,7 +241,7 @@
           {{ currentNotice.publishTime }}
         </el-descriptions-item>
         <el-descriptions-item label="公告内容：">
-          <div class="notice-content" v-html="currentNotice.content" />
+          <div class="notice-content" v-html="currentNotice.content"/>
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -249,18 +249,14 @@
 </template>
 
 <script setup lang="ts">
+import DictLabel from "@/components/Dict/DictLabel.vue";
+import NoticeAPI, {NoticeDetailVO, NoticeForm, NoticePageQuery, NoticePageVO,} from "@/api/system/notice";
+import UserAPI from "@/api/system/user";
+
 defineOptions({
   name: "Notice",
   inheritAttrs: false,
 });
-
-import NoticeAPI, {
-  NoticePageVO,
-  NoticeForm,
-  NoticePageQuery,
-  NoticeDetailVO,
-} from "@/api/system/notice";
-import UserAPI from "@/api/system/user";
 
 const queryFormRef = ref();
 const dataFormRef = ref();
@@ -270,7 +266,7 @@ const selectIds = ref<number[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<NoticePageQuery>({
-  pageNum: 1,
+  pageNumber: 1,
   pageSize: 10,
 });
 
@@ -292,7 +288,7 @@ const formData = reactive<NoticeForm>({
 
 // 通知公告表单校验规则
 const rules = reactive({
-  title: [{ required: true, message: "请输入通知标题", trigger: "blur" }],
+  title: [{required: true, message: "请输入通知标题", trigger: "blur"}],
   content: [
     {
       required: true,
@@ -307,7 +303,7 @@ const rules = reactive({
       },
     },
   ],
-  type: [{ required: true, message: "请选择通知类型", trigger: "change" }],
+  type: [{required: true, message: "请选择通知类型", trigger: "change"}],
 });
 
 const detailDialog = reactive({
@@ -331,7 +327,7 @@ function handleQuery() {
 // 重置查询
 function handleResetQuery() {
   queryFormRef.value!.resetFields();
-  queryParams.pageNum = 1;
+  queryParams.pageNumber = 1;
   handleQuery();
 }
 
@@ -353,7 +349,7 @@ function handleOpenDialog(id?: number) {
       Object.assign(formData, data);
     });
   } else {
-    Object.assign(formData, { level: 0, targetType: 0 });
+    Object.assign(formData, {level: 0, targetType: 0});
     dialog.title = "新增公告";
   }
 }
@@ -448,8 +444,7 @@ const closeDetailDialog = () => {
 };
 
 const openDetailDialog = async (id: string) => {
-  const noticeDetail = await NoticeAPI.getDetail(id);
-  currentNotice.value = noticeDetail;
+  currentNotice.value = await NoticeAPI.getDetail(id);
   detailDialog.visible = true;
 };
 

@@ -249,7 +249,7 @@ const queryParams = reactive({
   mobile: undefined,
   status: undefined,
   deptId: undefined,
-  createTime: [],
+  createTime: undefined,
 });
 
 /**  用户弹窗对象  */
@@ -306,7 +306,7 @@ function handleResetQuery() {
   queryFormRef.value.resetFields();
   queryParams.pageNumber = 1;
   queryParams.deptId = undefined;
-  queryParams.createTime = [];
+  queryParams.createTime = undefined;
   handleQuery();
 }
 

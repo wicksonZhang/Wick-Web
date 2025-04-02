@@ -81,11 +81,9 @@
               type="primary"
               link
               size="small"
+              icon="edit"
               @click.stop="handleOpenDialog(scope.row)"
             >
-              <template #icon>
-                <Edit/>
-              </template>
               编辑
             </el-button>
             <el-button
@@ -93,11 +91,9 @@
               type="danger"
               link
               size="small"
+              icon="delete"
               @click.stop="handleDelete(scope.row.id)"
             >
-              <template #icon>
-                <Delete/>
-              </template>
               删除
             </el-button>
           </template>
@@ -117,14 +113,10 @@
     <el-dialog
       v-model="dialog.visible"
       :title="dialog.title"
+      width="820px"
       @close="handleCloseDialog"
     >
-      <el-form
-        ref="dataFormRef"
-        :model="formData"
-        :rules="computedRules"
-        label-width="100px"
-      >
+      <el-form ref="dataFormRef" :model="formData" :rules="computedRules" label-width="100px">
         <el-form-item label="字典标签" prop="label">
           <el-input v-model="formData.label" placeholder="请输入字典标签"/>
         </el-form-item>
@@ -205,7 +197,8 @@ const dialog = reactive({
 });
 
 const formData = reactive<DictDataForm>({
-  status: 1
+  status: 1,
+  sort: 1,
 });
 
 // 监听路由参数变化，更新字典数据
@@ -331,6 +324,12 @@ function handleDelete(id?: number) {
 }
 
 onMounted(() => {
+  handleQuery();
+});
+
+// 同一路由参数变化时更新数据
+onBeforeRouteUpdate((to) => {
+  queryParams.dictCode = to.query.dictCode as string;
   handleQuery();
 });
 </script>

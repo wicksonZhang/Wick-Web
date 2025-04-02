@@ -2,19 +2,19 @@ import request from "@/utils/request";
 
 const DASHBOARD_BASE_URL = "/api/v1/system/dashboard";
 
-class DashboardAPI {
+const DashboardAPI  = {
   /**
    * 获取日志分页列表
    *
    * @param queryParams 查询参数
    */
-  static getPage(queryParams: DashboardPageQuery) {
+  getPage(queryParams: DashboardPageQuery) {
     return request<any, PageResult<DashboardPageVO[]>>({
       url: `${DASHBOARD_BASE_URL}/page`,
       method: "get",
       params: queryParams,
     });
-  }
+  },
 
   /**
    * 获取访问趋势
@@ -22,13 +22,13 @@ class DashboardAPI {
    * @param queryParams
    * @returns
    */
-  static getVisitTrend(queryParams: VisitTrendQuery) {
+  getVisitTrend(queryParams: VisitTrendQuery) {
     return request<any, VisitTrendVO>({
       url: `${DASHBOARD_BASE_URL}/visit-trend`,
       method: "get",
       params: queryParams,
     });
-  }
+  },
 
   /**
    * 获取访问趋势
@@ -36,8 +36,8 @@ class DashboardAPI {
    * @param queryParams
    * @returns
    */
-  static getVisitStats() {
-    return request<any, VisitStatsVO[]>({
+  getVisitStats() {
+    return request<any, VisitStatsVO>({
       url: `${DASHBOARD_BASE_URL}/visit-stats`,
       method: "get",
     });
