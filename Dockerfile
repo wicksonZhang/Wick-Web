@@ -4,6 +4,9 @@ FROM node:18.20.1 as build-stage
 # 设置工作目录
 WORKDIR /app
 
+# 将项目依赖文件复制到容器中
+COPY package*.json ./
+
 # 安装 pnpm
 RUN npm install -g pnpm
 
