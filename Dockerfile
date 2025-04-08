@@ -7,9 +7,6 @@ WORKDIR /app
 # 安装 pnpm
 RUN npm install -g pnpm
 
-# 先复制依赖文件，利用缓存
-COPY package.json pnpm-lock.yaml ./
-
 # 安装依赖
 RUN pnpm install
 
