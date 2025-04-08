@@ -10,9 +10,6 @@ RUN npm install -g pnpm
 # 安装依赖
 RUN pnpm install
 
-# 复制项目源代码
-COPY . .
-
 # 构建前端项目
 RUN pnpm run build:prod && ls -alh dist
 
