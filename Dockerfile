@@ -4,6 +4,24 @@ FROM nginx:1.24.0
 # 设置工作目录
 WORKDIR /app
 
+# 复制项目的 package.json 和 pnpm-lock.yaml 以利用缓存安装依赖
+COPY package.json pnpm-lock.yaml /app/
+
+# 设置国内镜像源
+RUN npm config set registry https://registry.npmmirror.com
+
+# 安装 pnpm
+RUN npm install -g pnpm
+
+# 安装项目依赖
+RUN pnpm install --frozen-lockfile
+
+# 复制其余源代码
+COPY . /app/
+
+# 构建前端项目
+RUN pnpm run build:prod
+
 # 设置时区为上海
 ENV TZ=Asia/Shanghai
 
