@@ -4,9 +4,6 @@ FROM nginx:1.24.0
 # 设置工作目录
 WORKDIR /app
 
-# 复制项目的 package.json 和 pnpm-lock.yaml 以利用缓存安装依赖
-COPY package.json pnpm-lock.yaml /app/
-
 # 设置国内镜像源
 RUN npm config set registry https://registry.npmmirror.com
 
